@@ -6,12 +6,12 @@
         android:title="My account" />
 
     <item
-        android:id="@+id/rideHistoryFragment"
+        android:id="@+id/driverRideHistoryFragment"
         android:icon="@drawable/ic_ride_history"
         android:title="Ride history" />
 
     <item
-        android:id="@+id/homeFragment"
+        android:id="@+id/unregisteredHomeFragment"
         android:icon="@drawable/ic_home"
         android:title="Home" />
 

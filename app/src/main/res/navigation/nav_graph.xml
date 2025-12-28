@@ -2,7 +2,7 @@
 <navigation
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:startDestination="@id/homeFragment"
+    app:startDestination="@id/unregisteredHomeFragment"
     app:enterAnim="@anim/slide_in"
     app:exitAnim="@anim/slide_out"
     app:popEnterAnim="@anim/slide_in"
@@ -13,12 +13,12 @@
         android:name="com.example.mobile_applications_project_2025.AccountFragment" />
 
     <fragment
-        android:id="@+id/rideHistoryFragment"
-        android:name="com.example.mobile_applications_project_2025.RideHistoryFragment" />
+        android:id="@+id/driverRideHistoryFragment"
+        android:name="com.example.mobile_applications_project_2025.DriverRideHistoryFragment" />
 
     <fragment
-        android:id="@+id/homeFragment"
-        android:name="com.example.mobile_applications_project_2025.HomeFragment" />
+        android:id="@+id/unregisteredHomeFragment"
+        android:name="com.example.mobile_applications_project_2025.UnregisteredHomeFragment" />
 
     <fragment
         android:id="@+id/chatFragment"
