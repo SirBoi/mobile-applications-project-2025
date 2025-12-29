@@ -30,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
         navController = navHostFragment.getNavController();
 
         boolean loggedIn = SessionManager.isLoggedIn(this);
-        String role = SessionManager.getRole(this);
+        //String role = SessionManager.getRole(this);
+        //if (role == null) role = "passenger";
 
         NavGraph graph = navController.getNavInflater().inflate(R.navigation.nav_graph);
         graph.setStartDestination(loggedIn ? R.id.homeFragment : R.id.unregisteredHomeFragment);
@@ -52,17 +53,51 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
 
+            String role = SessionManager.getRole(this);
+            if (role == null) role = "passenger";
+
             // Naredaj rutiranje za svaki id
             if (id == R.id.myAccountFragment) {
-                assert role != null;
+                navController.navigate(R.id.myAccountFragment);
+                return true;
+
+            } else if (id == R.id.driverRideHistoryFragment) {
                 if (role.equals("admin")) {
-                    navController.navigate(R.id.passengerRideOverviewFragment);
+                    navController.navigate(R.id.adminRideOverviewFragment);
                     return true;
                 } else if (role.equals("driver")) {
-                    navController.navigate(R.id.myAccountFragment);
+                    navController.navigate(R.id.driverRideHistoryFragment);
+                    return true;
+                } else {
+                    navController.navigate(R.id.passengerRideHistoryFragment);
+                    return true;
+                }
+
+            } else if (id == R.id.homeFragment) {
+                navController.navigate(R.id.homeFragment);
+                return true;
+
+            } else if (id == R.id.chatFragment) {
+                if (role.equals("admin")) {
+                    navController.navigate(R.id.adminUserListFragment);
+                    return true;
+                } else if (role.equals("driver")) {
+                    navController.navigate(R.id.chatFragment);
                     return true;
                 } else {
                     navController.navigate(R.id.chatFragment);
+                    return true;
+                }
+
+            } else if (id == R.id.statsFragment) {
+                if (role.equals("admin")) {
+                    navController.navigate(R.id.manageDriversFragment);
+                    return true;
+                } else if (role.equals("driver")) {
+                    navController.navigate(R.id.statsFragment);
+                    return true;
+                } else {
+                    navController.navigate(R.id.statsFragment);
                     return true;
                 }
             }

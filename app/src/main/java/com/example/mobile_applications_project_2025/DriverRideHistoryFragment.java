@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +14,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.mobile_applications_project_2025.Model.Driver;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class DriverRideHistoryFragment extends Fragment {
@@ -38,7 +42,8 @@ public class DriverRideHistoryFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_driver_ride_history, container, false);
+        View view = inflater.inflate(R.layout.fragment_driver_ride_history, container, false);
+        return view;
     }
 
     @Override
@@ -57,6 +62,15 @@ public class DriverRideHistoryFragment extends Fragment {
             String to = etToDate.getText() != null ? etToDate.getText().toString() : "";
             Toast.makeText(requireContext(), " " + from + " → " + to, Toast.LENGTH_SHORT).show();
         });
+
+        ViewGroup container = view.findViewById(R.id.scheduledCardsContainer);
+
+        for (int i = 0; i < container.getChildCount(); i++) {
+            View child = container.getChildAt(i);
+            if (child instanceof MaterialCardView) {
+                child.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.driverRideOverviewFragment));
+            }
+        }
     }
 
     private void showDatePicker(TextInputEditText target) {

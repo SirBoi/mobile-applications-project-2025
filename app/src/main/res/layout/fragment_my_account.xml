@@ -42,6 +42,15 @@
             android:textSize="14sp" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnUpdatePricing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="@color/orange_action"
+            android:text="Update pricing" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnUpdateProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

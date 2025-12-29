@@ -61,12 +61,25 @@ public class StatsFragment extends Fragment {
         TextView moneySum = view.findViewById(R.id.tvMoneySum);
         TextView moneyAvg = view.findViewById(R.id.tvMoneyAvg);
 
-        ridesSum.setText("314");
-        ridesAvg.setText("10");
-        kmSum.setText("301");
-        kmAvg.setText("10");
-        moneySum.setText("279");
-        moneyAvg.setText("9");
+        String role = SessionManager.getRole(getContext());
+        if (role != null) role = "passenger";
+
+        if (role.equals("admin")) {
+            ridesSum.setText("3140");
+            ridesAvg.setText("100");
+            kmSum.setText("3010");
+            kmAvg.setText("100");
+            moneySum.setText("2790");
+            moneyAvg.setText("90");
+        } else {
+            ridesSum.setText("314");
+            ridesAvg.setText("10");
+            kmSum.setText("301");
+            kmAvg.setText("10");
+            moneySum.setText("279");
+            moneyAvg.setText("9");
+        }
+
 
         ImageView imgRides = view.findViewById(R.id.imgRidesGraph);
         ImageView imgKm = view.findViewById(R.id.imgKmGraph);

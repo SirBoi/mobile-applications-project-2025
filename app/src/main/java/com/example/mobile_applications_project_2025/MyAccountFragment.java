@@ -55,8 +55,15 @@ public class MyAccountFragment extends Fragment {
         TextView tvBabyFriendly = view.findViewById(R.id.tvBabyFriendly);
         TextView tvPetFriendly = view.findViewById(R.id.tvPetFriendly);
 
+        MaterialButton btnUpdatePricing = view.findViewById(R.id.btnUpdatePricing);
         MaterialButton btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
         MaterialButton btnChangePassword = view.findViewById(R.id.btnChangePassword);
+
+        String role = SessionManager.getRole(requireContext());
+        if (role == null) role = "passenger";
+        if (!role.equals("admin")) {
+            btnUpdatePricing.setVisibility(View.GONE);
+        }
 
         ivProfile.setImageResource(R.drawable.ic_launcher_foreground);
 
@@ -98,6 +105,7 @@ public class MyAccountFragment extends Fragment {
             tvPetFriendly.setText("No");
         }
 
+        btnUpdatePricing.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.adminPriceUpdateFragment));
         btnUpdateProfile.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.updateAccountFragment));
         btnChangePassword.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.changePasswordFragment));
     }
