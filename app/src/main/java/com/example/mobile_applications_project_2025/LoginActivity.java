@@ -54,6 +54,15 @@ public class LoginActivity extends AppCompatActivity {
             if (!ok) return;
              */
 
+            // obrisati nakon kt1
+            if (email.equals("admin@gmail.com")) {
+                SessionManager.setRole(this, "admin");
+            } else if (email.equals("driver@gmail.com")) {
+                SessionManager.setRole(this, "driver");
+            } else {
+                SessionManager.setRole(this, "passenger");
+            }
+
             Toast.makeText(this, "Login success", Toast.LENGTH_SHORT).show();
 
             // odkomentarisi nakon kt1

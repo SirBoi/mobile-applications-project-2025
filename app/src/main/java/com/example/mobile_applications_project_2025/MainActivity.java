@@ -28,16 +28,59 @@ public class MainActivity extends AppCompatActivity {
         bottomNav = findViewById(R.id.bottomNav);
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         navController = navHostFragment.getNavController();
-        NavigationUI.setupWithNavController(bottomNav, navController);
 
-        /*
+        boolean loggedIn = SessionManager.isLoggedIn(this);
+        String role = SessionManager.getRole(this);
+
+        NavGraph graph = navController.getNavInflater().inflate(R.navigation.nav_graph);
+        graph.setStartDestination(loggedIn ? R.id.homeFragment : R.id.unregisteredHomeFragment);
+        navController.setGraph(graph);
+
+        //NavigationUI.setupWithNavController(bottomNav, navController); cemu sluzi???
+
         bottomNav.setOnItemReselectedListener(item -> {
             if (item.getItemId() == R.id.adminUserListFragment) {
                 // Vrati na listu "Recent Chats" kad ponovo klikneš na Chat dugme u navbaru
                 navController.popBackStack(R.id.adminUserListFragment, false);
             }
         });
-         */
+
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (!SessionManager.isLoggedIn(this)) {
+                return false;
+            }
+
+            // Naredaj rutiranje za svaki id
+            if (id == R.id.myAccountFragment) {
+                assert role != null;
+                if (role.equals("admin")) {
+                    navController.navigate(R.id.passengerRideOverviewFragment);
+                    return true;
+                } else if (role.equals("driver")) {
+                    navController.navigate(R.id.myAccountFragment);
+                    return true;
+                } else {
+                    navController.navigate(R.id.chatFragment);
+                    return true;
+                }
+            }
+
+            return NavigationUI.onNavDestinationSelected(item, navController);
+        });
+
+        bottomNav.setOnItemReselectedListener(item -> {
+            int id = item.getItemId();
+
+            // Naredaj rutiranje za svaki id
+            if (id == R.id.myAccountFragment) {
+                navController.popBackStack(R.id.passengerRideOverviewFragment, false);
+                return;
+            }
+
+            navController.popBackStack(id, false);
+        });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -45,13 +88,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        boolean loggedIn = SessionManager.isLoggedIn(this);
-
-        NavGraph graph = navController.getNavInflater().inflate(R.navigation.nav_graph);
-        graph.setStartDestination(loggedIn ? R.id.homeFragment : R.id.unregisteredHomeFragment);
-        navController.setGraph(graph);
-
-        NavigationUI.setupWithNavController(bottomNav, navController);
+        //NavigationUI.setupWithNavController(bottomNav, navController); sto su dva???
 
         navController.addOnDestinationChangedListener((controller, destination, args) -> {
             setBottomNavEnabled(SessionManager.isLoggedIn(this));
