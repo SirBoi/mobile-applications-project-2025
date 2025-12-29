@@ -1,31 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<navigation
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:startDestination="@id/unregisteredHomeFragment"
-    app:enterAnim="@anim/slide_in"
-    app:exitAnim="@anim/slide_out"
-    app:popEnterAnim="@anim/slide_in"
-    app:popExitAnim="@anim/slide_out">
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/unregisteredHomeFragment">
 
     <fragment
         android:id="@+id/accountFragment"
-        android:name="com.example.mobile_applications_project_2025.AccountFragment" />
+        android:name="com.example.mobile_applications_project_2025.AccountFragment"
+        android:label="My account" />
 
     <fragment
         android:id="@+id/driverRideHistoryFragment"
-        android:name="com.example.mobile_applications_project_2025.DriverRideHistoryFragment" />
+        android:name="com.example.mobile_applications_project_2025.DriverRideHistoryFragment"
+        android:label="Ride history" />
 
     <fragment
         android:id="@+id/unregisteredHomeFragment"
-        android:name="com.example.mobile_applications_project_2025.UnregisteredHomeFragment" />
+        android:name="com.example.mobile_applications_project_2025.UnregisteredHomeFragment"
+        android:label="Home" />
 
     <fragment
         android:id="@+id/chatFragment"
-        android:name="com.example.mobile_applications_project_2025.ChatFragment" />
+        android:name="com.example.mobile_applications_project_2025.ChatFragment"
+        android:label="Chat" />
 
     <fragment
-        android:id="@+id/statsFragment"
-        android:name="com.example.mobile_applications_project_2025.StatsFragment" />
+        android:id="@+id/adminUserListFragment"
+        android:name="com.example.mobile_applications_project_2025.AdminUserListFragment"
+        android:label="Recent Chats" />
+
+    <fragment
+        android:id="@+id/adminRideOverviewFragment"
+        android:name="com.example.mobile_applications_project_2025.AdminRideOverviewFragment"
+        android:label="Admin rides" />
+
+    <fragment
+        android:id="@+id/adminPriceUpdateFragment"
+        android:name="com.example.mobile_applications_project_2025.AdminPriceUpdateFragment"
+        android:label="Update prices" />
+
+    <fragment
+        android:id="@+id/driverRideOverviewFragment"
+        android:name="com.example.mobile_applications_project_2025.DriverRideOverviewFragment"
+        android:label="Driver ride overview" />
+
+    <fragment
+        android:id="@+id/passengerRideOverviewFragment"
+        android:name="com.example.mobile_applications_project_2025.PassengerRideOverviewFragment" />
+
+    <fragment
+        android:id="@+id/passengerRideHistoryFragment"
+        android:name="com.example.mobile_applications_project_2025.PassengerRideHistoryFragment"
+        android:label="Passenger ride history">
+
+        <action
+            android:id="@+id/action_passengerRideHistoryFragment_to_passengerRideOverviewFragment"
+            app:destination="@id/passengerRideOverviewFragment" />
+    </fragment>
+
+
+
 
 </navigation>

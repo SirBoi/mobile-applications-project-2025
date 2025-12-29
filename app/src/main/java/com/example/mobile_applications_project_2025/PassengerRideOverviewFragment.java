@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.NumberPicker;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -48,6 +49,30 @@ public class PassengerRideOverviewFragment extends Fragment {
         Button btnSend = view.findViewById(R.id.btnSend);
         Button btnReport = view.findViewById(R.id.btnReport);
 
+        NumberPicker npDriver = view.findViewById(R.id.npDriver);
+        NumberPicker npVehicle = view.findViewById(R.id.npVehicle);
+        TextInputEditText etRatingComment = view.findViewById(R.id.etRatingComment);
+        Button btnSubmitRating = view.findViewById(R.id.btnSubmitRating);
+
+
+
+        setupPicker(npDriver);
+        setupPicker(npVehicle);
+
+        btnSubmitRating.setOnClickListener(v -> {
+            int driverScore = npDriver.getValue();
+            int vehicleScore = npVehicle.getValue();
+            String comment = etRatingComment.getText() != null ? etRatingComment.getText().toString().trim() : "";
+
+            Toast.makeText(requireContext(),
+                    "Ocena vozača: " + driverScore + ", Ocena vozila: " + vehicleScore +
+                            (comment.isEmpty() ? "" : (", Komentar: " + comment)),
+                    Toast.LENGTH_SHORT).show();
+
+            etRatingComment.setText("");
+        });
+
+
         startMockEtaCountdown(tvEta, 4 * 60 + 35);
 
         btnSend.setOnClickListener(v -> {
@@ -60,6 +85,14 @@ public class PassengerRideOverviewFragment extends Fragment {
             etNote.setText("");
         });
     }
+
+    private void setupPicker(NumberPicker np) {
+        np.setMinValue(1);
+        np.setMaxValue(5);
+        np.setValue(5);
+        np.setWrapSelectorWheel(false);
+    }
+
 
     private void startMockEtaCountdown(TextView tvEta, int totalSeconds) {
         if (timer != null) timer.cancel();
