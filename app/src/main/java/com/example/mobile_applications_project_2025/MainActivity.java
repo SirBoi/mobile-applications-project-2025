@@ -30,12 +30,14 @@ public class MainActivity extends AppCompatActivity {
         navController = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(bottomNav, navController);
 
+        /*
         bottomNav.setOnItemReselectedListener(item -> {
             if (item.getItemId() == R.id.adminUserListFragment) {
                 // Vrati na listu "Recent Chats" kad ponovo klikneš na Chat dugme u navbaru
                 navController.popBackStack(R.id.adminUserListFragment, false);
             }
         });
+         */
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());

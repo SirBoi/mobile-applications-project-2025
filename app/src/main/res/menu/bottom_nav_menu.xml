@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/accountFragment"
+        android:id="@+id/myAccountFragment"
         android:icon="@drawable/ic_account"
         android:title="My account" />
 
@@ -11,7 +11,7 @@
         android:title="Ride history" />
 
     <item
-        android:id="@+id/unregisteredHomeFragment"
+        android:id="@+id/homeFragment"
         android:icon="@drawable/ic_home"
         android:title="Home" />
 
