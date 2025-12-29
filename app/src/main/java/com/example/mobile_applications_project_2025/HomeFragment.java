@@ -58,5 +58,8 @@ public class HomeFragment extends Fragment {
 
         ExtendedFloatingActionButton fab = view.findViewById(R.id.fabOngoingRide);
         fab.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.passengerRideOverviewFragment));
+
+        ExtendedFloatingActionButton fab2 = view.findViewById(R.id.fabCreateRide);
+        fab2.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.rideCreationFragment));
     }
 }
