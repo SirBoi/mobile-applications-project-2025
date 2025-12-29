@@ -50,7 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="16dp"
-                    android:text="Korisnik: Petar Petrović"
+                    android:text="User: Petar Petrović"
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:textSize="16sp"/>
@@ -71,7 +71,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="16dp"
-                    android:text="Korisnik: Ivana Ivanović"
+                    android:text="User: Ivana Ivanović"
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:textSize="16sp"/>
@@ -92,7 +92,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="16dp"
-                    android:text="Korisnik: Marko Marković"
+                    android:text="User: Marko Marković"
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:textSize="16sp"/>
@@ -113,7 +113,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="16dp"
-                    android:text="Korisnik: Ana Anić"
+                    android:text="User: Ana Anić"
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:textSize="16sp"/>
@@ -134,7 +134,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="16dp"
-                    android:text="Korisnik: Jovana Jović"
+                    android:text="User: Jovana Jović"
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:textSize="16sp"/>

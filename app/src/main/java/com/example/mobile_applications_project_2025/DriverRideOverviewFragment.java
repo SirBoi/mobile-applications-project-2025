@@ -57,13 +57,13 @@ public class DriverRideOverviewFragment extends Fragment {
 
             if (!finished || !paid) {
                 Toast.makeText(requireContext(),
-                        "Trenutno nema vožnji",
+                        "No rides available",
                         Toast.LENGTH_SHORT).show();
                 return;
             }
 
             Toast.makeText(requireContext(),
-                    "Trenutno nema vožnji",
+                    "No rides available",
                     Toast.LENGTH_SHORT).show();
         });
     }

@@ -105,7 +105,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Oceni vožnju"
+                android:text="Rate the ride"
                 android:textStyle="bold"
                 android:textSize="16sp" />
 
@@ -126,7 +126,7 @@
                         android:id="@+id/tvDriverRatingLabel"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Ocena vozača"
+                        android:text="Driver rating"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -161,7 +161,7 @@
                         android:id="@+id/tvVehicleRatingLabel"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Ocena vozila"
+                        android:text="Vehicle rating"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -195,7 +195,7 @@
                     android:id="@+id/etRatingComment"
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
-                    android:hint="Komentar (opciono)..."
+                    android:hint="Comment"
                     android:gravity="top|start"
                     android:inputType="textMultiLine"
                     android:paddingTop="14dp" />

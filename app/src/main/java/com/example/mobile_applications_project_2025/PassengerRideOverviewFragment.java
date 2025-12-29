@@ -65,8 +65,8 @@ public class PassengerRideOverviewFragment extends Fragment {
             String comment = etRatingComment.getText() != null ? etRatingComment.getText().toString().trim() : "";
 
             Toast.makeText(requireContext(),
-                    "Ocena vozača: " + driverScore + ", Ocena vozila: " + vehicleScore +
-                            (comment.isEmpty() ? "" : (", Komentar: " + comment)),
+                    "Driver rating: " + driverScore + ", Car rating: " + vehicleScore +
+                            (comment.isEmpty() ? "" : (", Comment: " + comment)),
                     Toast.LENGTH_SHORT).show();
 
             etRatingComment.setText("");

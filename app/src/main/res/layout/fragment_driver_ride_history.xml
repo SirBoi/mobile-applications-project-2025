@@ -23,7 +23,7 @@
                 android:id="@+id/tvScheduledTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Zakazane vožnje"
+                android:text="Scheduled rides"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 app:layout_constraintTop_toTopOf="parent"
@@ -70,7 +70,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Zakazan"
+                            android:text="Scheduled"
                             android:textStyle="bold"
                             android:textColor="@color/orange_action"/>
                     </LinearLayout>
@@ -110,12 +110,12 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Otkazana: Ne"/>
+                            android:text="Cancelled: No"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Panic: Ne"/>
+                            android:text="Panicked: No"/>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -149,7 +149,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Zakazan"
+                            android:text="Scheduled"
                             android:textStyle="bold"
                             android:textColor="@color/orange_action"/>
                     </LinearLayout>
@@ -175,7 +175,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0 RSD"
+                            android:text="700 RSD"
                             android:textStyle="bold"/>
                     </LinearLayout>
 
@@ -189,12 +189,12 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Otkazana: Ne"/>
+                            android:text="Cancelled: No"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Panic: Ne"/>
+                            android:text="Panicked: No"/>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -228,7 +228,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Zakazan"
+                            android:text="Scheduled"
                             android:textStyle="bold"
                             android:textColor="@color/orange_action"/>
                     </LinearLayout>
@@ -268,12 +268,12 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Otkazana: Ne"/>
+                            android:text="Cancelled: No"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Panic: Ne"/>
+                            android:text="Panicked: No"/>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

@@ -82,6 +82,8 @@
                 android:text="Send"
                 android:minHeight="48dp"
                 app:cornerRadius="14dp"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="@color/orange_action"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tilMessage"
                 app:layout_constraintBottom_toBottomOf="@id/tilMessage" />
