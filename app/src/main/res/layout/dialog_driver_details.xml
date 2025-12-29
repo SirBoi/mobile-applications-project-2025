@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+        <ImageView
+            android:id="@+id/ivProfile"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/app_name" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvFirstNameLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="First name"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvFirstNameValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Marko" />
+
+            <TextView
+                android:id="@+id/tvLastNameLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Last name"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvLastNameValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Jovanovic" />
+
+            <TextView
+                android:id="@+id/tvEmailLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Email"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvEmailValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="marko.jovanovic@mail.com" />
+
+            <TextView
+                android:id="@+id/tvAddressLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Address"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvAddressValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Bulevar Oslobodjenja 12, Novi Sad" />
+
+            <TextView
+                android:id="@+id/tvPhoneLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Phone number"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPhoneValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="+381 64 111 222" />
+
+            <TextView
+                android:id="@+id/tvCarModelLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Car model"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvCarModelValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Skoda Octavia" />
+
+            <TextView
+                android:id="@+id/tvCarTypeLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Car type"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvCarTypeValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Standard" />
+
+            <TextView
+                android:id="@+id/tvPlateLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Plate number"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPlateValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="NS-123-AB" />
+
+            <TextView
+                android:id="@+id/tvSeatsLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Number of seats"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvSeatsValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="4" />
+
+            <TextView
+                android:id="@+id/tvBabyFriendlyLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Baby friendly"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvBabyFriendlyValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Yes" />
+
+            <TextView
+                android:id="@+id/tvAnimalFriendlyLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Animal friendly"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvAnimalFriendlyValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Yes" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

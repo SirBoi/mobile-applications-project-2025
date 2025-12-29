@@ -1,12 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-<!--    <item-->
-<!--        android:id="@+id/passengerRideHistoryFragment"-->
-<!--        android:icon="@drawable/ic_account"-->
-<!--        android:title="My account" />-->
-
     <item
-        android:id="@+id/passengerRideHistoryFragment"
+        android:id="@+id/accountFragment"
         android:icon="@drawable/ic_account"
         android:title="My account" />
 
@@ -21,21 +16,13 @@
         android:title="Home" />
 
     <item
-        android:id="@+id/adminUserListFragment"
+        android:id="@+id/chatFragment"
         android:icon="@drawable/ic_chat"
         android:title="Chat" />
 
     <item
-        android:id="@+id/adminRideOverviewFragment"
+        android:id="@+id/statsFragment"
         android:icon="@drawable/ic_stats"
-        android:title="Admin" />
-
-    <item
-        android:id="@+id/adminPriceUpdateFragment"
-        android:icon="@drawable/ic_stats"
-        android:title="Prices" />
-
-
-
+        android:title="Stats" />
 
 </menu>

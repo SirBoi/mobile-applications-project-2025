@@ -78,10 +78,10 @@ public class PassengerRideOverviewFragment extends Fragment {
         btnSend.setOnClickListener(v -> {
             String text = etNote.getText() != null ? etNote.getText().toString().trim() : "";
             if (text.isEmpty()) {
-                Toast.makeText(requireContext(), "Unesi napomenu pre slanja.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Enter a notice before submitting.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            Toast.makeText(requireContext(), "Poslata prijava " + text, Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Report submitted " + text, Toast.LENGTH_SHORT).show();
             etNote.setText("");
         });
     }

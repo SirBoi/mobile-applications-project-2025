@@ -38,26 +38,29 @@ public class UnregisteredHomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Button btnPrijava = view.findViewById(R.id.btnPrijava);
+        Button btnPrijava = view.findViewById(R.id.uBtnPrijava);
         btnPrijava.setOnClickListener(v -> {
-            Intent intent = new Intent(requireContext(), DriverRideHistoryFragment.class);
+            //Intent intent = new Intent(requireContext(), DriverRideHistoryFragment.class);
             // Intent intent = new Intent(requireContext(), PassengerRideOverviewFragment.class);
+            Intent intent = new Intent(requireContext(), LoginActivity.class);
             startActivity(intent);
         });
 
-        View markerBusy1 = view.findViewById(R.id.markerBusy1);
-        View markerFree1 = view.findViewById(R.id.markerFree1);
-        View markerFree2 = view.findViewById(R.id.markerFree2);
+        /* kreiranje markera na mapi. uklonjeno jer su neki vec zaljepljeni na sliku mape
+        View markerBusy1 = view.findViewById(R.id.uMarkerBusy1);
+        View markerFree1 = view.findViewById(R.id.uMarkerFree1);
+        View markerFree2 = view.findViewById(R.id.uMarkerFree2);
 
         markerBusy1.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Vozilo: Zauzeto", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Vehicle: Unavailable", Toast.LENGTH_SHORT).show()
         );
         markerFree1.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Vozilo: Slobodno", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Vehicle: Available", Toast.LENGTH_SHORT).show()
         );
         markerFree2.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Vozilo: Slobodno", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Vehicle: Available", Toast.LENGTH_SHORT).show()
         );
+         */
     }
 }
 

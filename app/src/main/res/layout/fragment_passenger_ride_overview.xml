@@ -16,32 +16,27 @@
         <!-- TOP BAR -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="40dp"
             android:paddingStart="16dp"
-            android:paddingEnd="16dp">
-
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Praćenje vožnje"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+            android:paddingEnd="16dp"
+            android:background="@color/orange_action">
 
             <Button
                 android:id="@+id/btnReport"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:text="Prijavi"
-                android:textAllCaps="false"
-                android:textColor="#FFFFFF"
+                android:layout_height="40dp"
+                android:layout_marginEnd="-16dp"
                 android:backgroundTint="@color/orange_action"
-                app:layout_constraintTop_toTopOf="parent"
+                android:insetTop="0dp"
+                android:insetBottom="2dp"
+                android:text="Log out"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- MAP + ETA CARD -->
@@ -81,7 +76,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Vreme do dolaska"
+                        android:text="Remaining time:"
                         android:textStyle="bold"
                         android:textSize="12sp"
                         android:alpha="0.8"/>
@@ -230,7 +225,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Napomena / prijava nekonzistentnosti"
+                android:text="Report message:"
                 android:textStyle="bold"
                 android:textSize="16sp"/>
 
@@ -249,7 +244,7 @@
                     android:id="@+id/etNote"
                     android:layout_width="match_parent"
                     android:layout_height="140dp"
-                    android:hint="Unesite opis problema..."
+                    android:hint="Describe the problem you are having."
                     android:gravity="top|start"
                     android:inputType="textMultiLine"
                     android:paddingTop="14dp"/>
@@ -265,14 +260,6 @@
                 android:textStyle="bold"
                 android:textColor="#FFFFFF"
                 android:backgroundTint="@color/orange_action"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="UI-only: dugme samo šalje mock poruku (Toast)."
-                android:textSize="12sp"
-                android:alpha="0.6"/>
 
             <!-- malo prostora da bude “scroll feeling” -->
             <View

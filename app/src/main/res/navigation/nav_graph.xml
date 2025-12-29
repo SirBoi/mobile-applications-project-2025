@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/unregisteredHomeFragment">
+    app:startDestination="@id/unregisteredHomeFragment"
+    app:enterAnim="@anim/slide_in"
+    app:exitAnim="@anim/slide_out"
+    app:popEnterAnim="@anim/slide_in"
+    app:popExitAnim="@anim/slide_out">
 
     <fragment
-        android:id="@+id/accountFragment"
-        android:name="com.example.mobile_applications_project_2025.AccountFragment"
-        android:label="My account" />
+        android:id="@+id/myAccountFragment"
+        android:name="com.example.mobile_applications_project_2025.MyAccountFragment" />
+
+    <fragment
+        android:id="@+id/updateAccountFragment"
+        android:name="com.example.mobile_applications_project_2025.UpdateAccountFragment" />
+
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.example.mobile_applications_project_2025.ChangePasswordFragment" />
 
     <fragment
         android:id="@+id/driverRideHistoryFragment"
@@ -28,6 +40,10 @@
         android:id="@+id/adminUserListFragment"
         android:name="com.example.mobile_applications_project_2025.AdminUserListFragment"
         android:label="Recent Chats" />
+
+    <fragment
+        android:id="@+id/statsFragment"
+        android:name="com.example.mobile_applications_project_2025.StatsFragment" />
 
     <fragment
         android:id="@+id/adminRideOverviewFragment"
@@ -52,13 +68,25 @@
         android:id="@+id/passengerRideHistoryFragment"
         android:name="com.example.mobile_applications_project_2025.PassengerRideHistoryFragment"
         android:label="Passenger ride history">
-
         <action
             android:id="@+id/action_passengerRideHistoryFragment_to_passengerRideOverviewFragment"
             app:destination="@id/passengerRideOverviewFragment" />
     </fragment>
 
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.mobile_applications_project_2025.HomeFragment" />
 
+    <fragment
+        android:id="@+id/manageDriversFragment"
+        android:name="com.example.mobile_applications_project_2025.ManageDriversFragment" />
 
+    <fragment
+        android:id="@+id/driverCreationFragment"
+        android:name="com.example.mobile_applications_project_2025.DriverCreationFragment" />
+
+    <fragment
+        android:id="@+id/driverActivationFragment"
+        android:name="com.example.mobile_applications_project_2025.DriverActivationFragment" />
 
 </navigation>

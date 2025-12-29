@@ -290,7 +290,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Istorija vožnji"
+                android:text="Ride history"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 app:layout_constraintTop_toTopOf="parent"
@@ -326,7 +326,7 @@
                         android:id="@+id/etFromDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Od"
+                        android:hint="From"
                         android:focusable="false"
                         android:clickable="true"
                         android:inputType="none"/>
@@ -346,7 +346,7 @@
                         android:id="@+id/etToDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Do"
+                        android:hint="To"
                         android:focusable="false"
                         android:clickable="true"
                         android:inputType="none"/>
@@ -359,7 +359,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="10dp"
-                android:text="Primeni filter"
+                android:text="Search"
                 android:textAllCaps="false"
                 android:textStyle="bold"
                 android:textColor="#FFFFFF"
@@ -405,7 +405,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Završena"
+                            android:text="Finished"
                             android:textStyle="bold"
                             android:textColor="#2E7D32"/>
                     </LinearLayout>
@@ -445,12 +445,12 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Otkazana: Ne"/>
+                            android:text="Cancelled: No"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Panic: Ne"/>
+                            android:text="Panicked: No"/>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -484,7 +484,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Otkazana"
+                            android:text="Cancelled"
                             android:textStyle="bold"
                             android:textColor="#C62828"/>
                     </LinearLayout>
@@ -510,7 +510,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0 RSD"
+                            android:text="750 RSD"
                             android:textStyle="bold"/>
                     </LinearLayout>
 
@@ -524,12 +524,12 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Otkazana: Da (putnik)"/>
+                            android:text="Cancelled: By passenger"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Panic: Ne"/>
+                            android:text="Panicked: No"/>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -563,7 +563,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Završena"
+                            android:text="Finished"
                             android:textStyle="bold"
                             android:textColor="#2E7D32"/>
                     </LinearLayout>
@@ -603,12 +603,12 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Otkazana: Ne"/>
+                            android:text="Cancelled: No"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Panic: Da"/>
+                            android:text="Panicked: Yes"/>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
