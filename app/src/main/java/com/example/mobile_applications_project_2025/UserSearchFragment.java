@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,11 +55,11 @@ public class UserSearchFragment extends Fragment {
         });
 
         // Klik na kartice (UI-only)
-        view.findViewById(R.id.cardUser1).setOnClickListener(v -> toast("Otvoren korisnik: Marko Marković"));
-        view.findViewById(R.id.cardUser2).setOnClickListener(v -> toast("Otvoren korisnik: Jovana Jovanović"));
-        view.findViewById(R.id.cardUser3).setOnClickListener(v -> toast("Otvoren korisnik: Nikola Nikolić"));
-        view.findViewById(R.id.cardUser4).setOnClickListener(v -> toast("Otvoren korisnik: Ana Anić"));
-        view.findViewById(R.id.cardUser5).setOnClickListener(v -> toast("Otvoren korisnik: Petar Petrović"));
+        view.findViewById(R.id.cardUser1).setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.userAccountFragment));
+        view.findViewById(R.id.cardUser2).setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.userAccountFragment));
+        view.findViewById(R.id.cardUser3).setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.userAccountFragment));
+        view.findViewById(R.id.cardUser4).setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.userAccountFragment));
+        view.findViewById(R.id.cardUser5).setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.userAccountFragment));
     }
 
     private void toast(String msg) {

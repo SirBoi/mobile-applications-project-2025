@@ -57,4 +57,17 @@
 
     </FrameLayout>
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabOngoingRide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View ongoing ride"
+        android:textColor="@android:color/white"
+        app:iconTint="@android:color/white"
+        app:backgroundTint="@color/orange_action"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="40dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

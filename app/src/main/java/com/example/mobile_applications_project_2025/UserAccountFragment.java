@@ -13,19 +13,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.mobile_applications_project_2025.Model.Enumerator.Role;
 import com.example.mobile_applications_project_2025.Model.User;
 import com.google.android.material.button.MaterialButton;
 
-public class MyAccountFragment extends Fragment {
-    public MyAccountFragment() {
+public class UserAccountFragment extends Fragment {
+    public UserAccountFragment() {
         // Required empty public constructor
     }
 
-    public static MyAccountFragment newInstance(String param1, String param2) {
-        MyAccountFragment fragment = new MyAccountFragment();
+    public static UserAccountFragment newInstance(String param1, String param2) {
+        UserAccountFragment fragment = new UserAccountFragment();
         Bundle bundle = new Bundle();
         return fragment;
     }
@@ -37,7 +36,7 @@ public class MyAccountFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_my_account, container, false);
+        return inflater.inflate(R.layout.fragment_user_account, container, false);
     }
 
     @Override
@@ -54,18 +53,6 @@ public class MyAccountFragment extends Fragment {
         TextView tvCarSeats = view.findViewById(R.id.tvCarSeats);
         TextView tvBabyFriendly = view.findViewById(R.id.tvBabyFriendly);
         TextView tvPetFriendly = view.findViewById(R.id.tvPetFriendly);
-
-        MaterialButton btnViewActiveRides = view.findViewById(R.id.btnViewActiveRides);
-        MaterialButton btnUpdatePricing = view.findViewById(R.id.btnUpdatePricing);
-        MaterialButton btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
-        MaterialButton btnChangePassword = view.findViewById(R.id.btnChangePassword);
-
-        String role = SessionManager.getRole(requireContext());
-        if (role == null) role = "passenger";
-        if (!role.equals("admin")) {
-            btnUpdatePricing.setVisibility(View.GONE);
-            btnViewActiveRides.setVisibility(View.GONE);
-        }
 
         ivProfile.setImageResource(R.drawable.ic_launcher_foreground);
 
@@ -106,10 +93,5 @@ public class MyAccountFragment extends Fragment {
             tvBabyFriendly.setText("No");
             tvPetFriendly.setText("No");
         }
-
-        btnViewActiveRides.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.adminRideOverviewFragment));
-        btnUpdatePricing.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.adminPriceUpdateFragment));
-        btnUpdateProfile.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.updateAccountFragment));
-        btnChangePassword.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.changePasswordFragment));
     }
 }

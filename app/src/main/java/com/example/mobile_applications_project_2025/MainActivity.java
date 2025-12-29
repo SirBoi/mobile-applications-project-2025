@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
             } else if (id == R.id.driverRideHistoryFragment) {
                 if (role.equals("admin")) {
-                    navController.navigate(R.id.adminRideOverviewFragment);
+                    navController.navigate(R.id.userSearchFragment);
                     return true;
                 } else if (role.equals("driver")) {
                     navController.navigate(R.id.driverRideHistoryFragment);

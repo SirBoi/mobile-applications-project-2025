@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 public class HomeFragment extends Fragment {
     public HomeFragment() {
@@ -54,5 +55,8 @@ public class HomeFragment extends Fragment {
             graph.setStartDestination(R.id.unregisteredHomeFragment);
             navController.setGraph(graph);
         });
+
+        ExtendedFloatingActionButton fab = view.findViewById(R.id.fabOngoingRide);
+        fab.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.passengerRideOverviewFragment));
     }
 }
