@@ -68,19 +68,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="40dp" />
+        android:layout_marginBottom="20dp" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabCreateRide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Create a new ride"
         android:textColor="@android:color/white"
-        app:iconTint="@android:color/white"
         app:backgroundTint="@color/orange_action"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:iconTint="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="600dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/topBar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

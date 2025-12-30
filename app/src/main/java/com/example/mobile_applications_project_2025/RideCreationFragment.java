@@ -30,12 +30,12 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class RideCreationFragment extends Fragment {
-    private MaterialTextView tvPickupLabel;
-    private MaterialTextView tvDropoffLabel;
-    private TextInputEditText etPickup;
-    private TextInputEditText etDropoff;
-    private MaterialButton btnSetPickup;
-    private MaterialButton btnSetDropoff;
+    private MaterialTextView tvPassengerLabel;
+    private MaterialTextView tvStopLabel;
+    private TextInputEditText etPassenger;
+    private TextInputEditText etStop;
+    private MaterialButton btnSetPassenger;
+    private MaterialButton btnSetStop;
 
     private MaterialButton btnPickDateTime;
     private MaterialTextView tvSelectedDateTime;
@@ -69,12 +69,12 @@ public class RideCreationFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ride_creation, container, false);
 
-        tvPickupLabel = view.findViewById(R.id.tvPickupLabel);
-        tvDropoffLabel = view.findViewById(R.id.tvDropoffLabel);
-        etPickup = view.findViewById(R.id.etPickup);
-        etDropoff = view.findViewById(R.id.etDropoff);
-        btnSetPickup = view.findViewById(R.id.btnSetPickup);
-        btnSetDropoff = view.findViewById(R.id.btnSetDropoff);
+        tvPassengerLabel = view.findViewById(R.id.tvPassengerLabel);
+        tvStopLabel = view.findViewById(R.id.tvStopLabel);
+        etPassenger = view.findViewById(R.id.etPassenger);
+        etStop = view.findViewById(R.id.etStop);
+        btnSetPassenger = view.findViewById(R.id.btnSetPassenger);
+        btnSetStop = view.findViewById(R.id.btnSetStop);
 
         btnPickDateTime = view.findViewById(R.id.btnPickDateTime);
         tvSelectedDateTime = view.findViewById(R.id.tvSelectedDateTime);
@@ -87,16 +87,32 @@ public class RideCreationFragment extends Fragment {
         tvDistanceValue = view.findViewById(R.id.tvDistanceValue);
         tvPriceValue = view.findViewById(R.id.tvPriceValue);
 
-        setupAddressCapture(btnSetPickup, etPickup, tvPickupLabel);
-        setupAddressCapture(btnSetDropoff, etDropoff, tvDropoffLabel);
+        setupAddressCapture(btnSetPassenger, etPassenger, tvPassengerLabel);
+        setupAddressCapture(btnSetStop, etStop, tvStopLabel);
 
-        String[] vehicleTypes = new String[]{"Standard", "Van", "Luxury", "Electric"};
+        String[] vehicleTypes = new String[]{"Standard", "Luxury", "Van"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, vehicleTypes);
         ddVehicleType.setAdapter(adapter);
 
         btnPickDateTime.setOnClickListener(v -> openDateThenTimePicker());
 
         updateDateTimeText();
+
+        MaterialButton btnCreateRide = view.findViewById(R.id.btnCreateRide);
+        btnCreateRide.setOnClickListener(v -> {
+            new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Ride created")
+                    .setMessage("Your ride has been created successfully.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        dialog.dismiss();
+                        androidx.navigation.fragment.NavHostFragment
+                                .findNavController(this)
+                                .navigateUp();
+                    })
+                    .show();
+        });
+
 
         return view;
     }
@@ -105,7 +121,7 @@ public class RideCreationFragment extends Fragment {
         button.setOnClickListener(v -> {
             String text = field.getText() == null ? "" : field.getText().toString().trim();
             if (TextUtils.isEmpty(text)) return;
-            label.setText(text);
+            label.setText(label.getText() + "\n" + text);
             label.setVisibility(View.VISIBLE);
             field.setText("");
         });
@@ -148,9 +164,9 @@ public class RideCreationFragment extends Fragment {
                 Locale.getDefault(),
                 "%04d-%02d-%02d %02d:%02d",
                 selected.get(Calendar.YEAR),
-                selected.get(Calendar.MONTH) + 1,
+                selected.get(Calendar.MONTH),
                 selected.get(Calendar.DAY_OF_MONTH),
-                selected.get(Calendar.HOUR_OF_DAY),
+                selected.get(Calendar.HOUR_OF_DAY) + 1,
                 selected.get(Calendar.MINUTE)
         );
         tvSelectedDateTime.setText(s);

@@ -6,7 +6,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:fillViewport="true"
     tools:context=".RideCreationFragment">
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -14,7 +17,7 @@
             android:padding="20dp">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tvPickupLabel"
+                android:id="@+id/tvPassengerLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
@@ -35,23 +38,24 @@
                     android:layout_marginEnd="10dp">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etPickup"
+                        android:id="@+id/etPassenger"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Pickup"
+                        android:hint="Passenger"
                         android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSetPickup"
+                    android:id="@+id/btnSetPassenger"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Set"
+                    android:text="Add"
+                    android:backgroundTint="@color/orange_action"
                     android:textAllCaps="false" />
             </LinearLayout>
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tvDropoffLabel"
+                android:id="@+id/tvStopLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
@@ -73,42 +77,28 @@
                     android:layout_marginEnd="10dp">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etDropoff"
+                        android:id="@+id/etStop"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Destination"
+                        android:hint="Stop"
                         android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSetStop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add"
+                    android:backgroundTint="@color/orange_action"
+                    android:textAllCaps="false" />
             </LinearLayout>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSetDropoff"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Set"
-                android:textAllCaps="false" />
         </LinearLayout>
-
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Date and time"
-            android:textStyle="bold"
-            android:paddingTop="18dp"
-            android:paddingBottom="8dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnPickDateTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pick"
-                android:textAllCaps="false" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvSelectedDateTime"
@@ -117,15 +107,15 @@
                 android:layout_weight="1"
                 android:paddingStart="12dp"
                 android:textSize="16sp" />
-        </LinearLayout>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Vehicle type"
-            android:textStyle="bold"
-            android:paddingTop="18dp"
-            android:paddingBottom="8dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPickDateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Choose date and time"
+                android:backgroundTint="@color/orange_action"
+                android:textAllCaps="false" />
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -137,21 +127,23 @@
                 android:id="@+id/ddVehicleType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Select vehicle type"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:hint="Vehicle type"
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="14dp">
+            android:orientation="horizontal" >
 
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/cbBabyFriendly"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center"
                 android:text="Baby friendly" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
@@ -159,20 +151,23 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center"
                 android:text="Animal friendly" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="18dp">
+            android:orientation="horizontal"
+            android:paddingTop="18dp"
+            android:weightSum="2">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingBottom="10dp">
+                android:gravity="center"
+                android:layout_weight="1">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
@@ -185,13 +180,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingStart="8dp"
-                    android:text="—" />
+                    android:text="4.5 km" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_weight="1">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
@@ -204,7 +201,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingStart="8dp"
-                    android:text="—" />
+                    android:text="400 RSD" />
             </LinearLayout>
         </LinearLayout>
 
@@ -212,8 +209,9 @@
             android:id="@+id/btnCreateRide"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Create ride"
+            android:text="Create new ride"
             android:textAllCaps="false"
+            android:backgroundTint="@color/orange_action"
             android:layout_marginTop="22dp" />
-
-    </ScrollView>
+    </LinearLayout>
+</ScrollView>
