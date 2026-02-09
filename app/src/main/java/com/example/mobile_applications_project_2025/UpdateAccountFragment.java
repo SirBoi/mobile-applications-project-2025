@@ -1,171 +1,234 @@
 package com.example.mobile_applications_project_2025;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-
+import com.example.mobile_applications_project_2025.DTO.UpdateDriverDTO;
+import com.example.mobile_applications_project_2025.Model.Admin;
+import com.example.mobile_applications_project_2025.Model.Enumerator.CarType;
 import com.example.mobile_applications_project_2025.Model.Enumerator.Role;
-import com.example.mobile_applications_project_2025.Model.User;
+import com.example.mobile_applications_project_2025.Model.Passenger;
+import com.example.mobile_applications_project_2025.Model.RegisteredUser;
+import com.example.mobile_applications_project_2025.Model.Driver;
+import com.example.mobile_applications_project_2025.Network.APIs.RegisteredUserAPI;
+import com.example.mobile_applications_project_2025.Network.ApiClient;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import java.io.InputStream;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UpdateAccountFragment extends Fragment {
-    private static final String PREF = "session";
-    private static final String KEY_PICTURE_URI = "profile_picture_uri";
-    private static final String KEY_CAR_MODEL = "profile_car_model";
-    private static final String KEY_CAR_TYPE = "profile_car_type";
-    private static final String KEY_PLATE = "profile_plate";
-    private static final String KEY_SEATS = "profile_seats";
-    private static final String KEY_BABY = "profile_baby_friendly";
-    private static final String KEY_PET = "profile_pet_friendly";
 
+    private ActivityResultLauncher<String> imagePickerLauncher;
     private Uri selectedImageUri;
-    private ActivityResultLauncher<String> pickImageLauncher;
-
-    public UpdateAccountFragment() {
-        // Required empty public constructor
-    }
-
-    public static UpdateAccountFragment newInstance(String param1, String param2) {
-        UpdateAccountFragment fragment = new UpdateAccountFragment();
-        Bundle bundle = new Bundle();
-        return fragment;
-    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        pickImageLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-            if (uri != null) {
-                selectedImageUri = uri;
-                View v = getView();
-                if (v != null) {
-                    ImageView iv = v.findViewById(R.id.ivProfile);
-                    iv.setImageURI(uri);
-                }
-            }
-        });
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState
+    ) {
         return inflater.inflate(R.layout.fragment_update_account, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        imagePickerLauncher =
+                registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                    if (uri != null) {
+                        selectedImageUri = uri;
+                    }
+                });
+
         ImageView ivProfile = view.findViewById(R.id.ivProfile);
-        MaterialButton btnChangeImage = view.findViewById(R.id.btnChangeImage);
 
         TextInputEditText etFirstName = view.findViewById(R.id.etFirstName);
         TextInputEditText etLastName = view.findViewById(R.id.etLastName);
         TextInputEditText etAddress = view.findViewById(R.id.etAddress);
         TextInputEditText etPhone = view.findViewById(R.id.etPhone);
 
-        View driverFieldsContainer = view.findViewById(R.id.driverFieldsContainer);
+        LinearLayout driverFieldsContainer = view.findViewById(R.id.driverFieldsContainer);
         TextInputEditText etCarModel = view.findViewById(R.id.etCarModel);
-        TextInputEditText etCarType = view.findViewById(R.id.etCarType);
-        TextInputEditText etPlate = view.findViewById(R.id.etPlateNumber);
-        TextInputEditText etSeats = view.findViewById(R.id.etCarSeats);
-        MaterialSwitch swBaby = view.findViewById(R.id.swBabyFriendly);
-        MaterialSwitch swPet = view.findViewById(R.id.swPetFriendly);
+        AutoCompleteTextView spCarType = view.findViewById(R.id.spCarType);
+        TextInputEditText etPlateNumber = view.findViewById(R.id.etPlateNumber);
+        TextInputEditText etCarSeats = view.findViewById(R.id.etCarSeats);
+        MaterialSwitch swBabyFriendly = view.findViewById(R.id.swBabyFriendly);
+        MaterialSwitch swPetFriendly = view.findViewById(R.id.swPetFriendly);
 
-        MaterialButton btnSave = view.findViewById(R.id.btnSaveChanges);
-
-        SharedPreferences prefs = requireContext().getSharedPreferences(PREF, Context.MODE_PRIVATE);
-        User u = SessionManager.getUser(requireContext());
-
-        String pic = prefs.getString(KEY_PICTURE_URI, null);
-        if (!TextUtils.isEmpty(pic)) {
-            selectedImageUri = Uri.parse(pic);
-            ivProfile.setImageURI(selectedImageUri);
-        } else {
-            ivProfile.setImageResource(R.drawable.ic_launcher_foreground);
+        String[] carTypes = new String[CarType.values().length];
+        for (int i = 0; i < CarType.values().length; i++) {
+            carTypes[i] = CarType.values()[i].name();
         }
 
-        if (u != null) {
-            etFirstName.setText(u.firstName != null ? u.firstName : "");
-            etLastName.setText(u.lastName != null ? u.lastName : "");
-            etAddress.setText(u.address != null ? u.address : "");
-            etPhone.setText(u.phoneNumber != null ? u.phoneNumber : "");
+        spCarType.setAdapter(new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                carTypes
+        ));
 
-            boolean isDriver = u.role == Role.driver;
-            driverFieldsContainer.setVisibility(isDriver ? View.VISIBLE : View.GONE);
+        MaterialButton btnChangeImage = view.findViewById(R.id.btnChangeImage);
+        btnChangeImage.setOnClickListener(v ->
+                imagePickerLauncher.launch("image/*")
+        );
 
-            if (isDriver) {
-                etCarModel.setText(prefs.getString(KEY_CAR_MODEL, ""));
-                etCarType.setText(prefs.getString(KEY_CAR_TYPE, ""));
-                etPlate.setText(prefs.getString(KEY_PLATE, ""));
-                etSeats.setText(prefs.getString(KEY_SEATS, ""));
-                swBaby.setChecked(prefs.getBoolean(KEY_BABY, false));
-                swPet.setChecked(prefs.getBoolean(KEY_PET, false));
-            }
-        } else {
-            //driverFieldsContainer.setVisibility(View.GONE);
+        RegisteredUser user = SessionManager.getUser();
+        if (user == null) return;
 
-            // izbrisi nakon kt1
-            etFirstName.setText("Aleksa");
-            etLastName.setText("Aleksic");
-            etAddress.setText("Alekse Santica 1");
-            etPhone.setText("+123456789");
+        // ===== PREFILL COMMON =====
+        etFirstName.setText(user.firstName);
+        etLastName.setText(user.lastName);
+        etAddress.setText(user.address);
+        etPhone.setText(user.phoneNumber);
+
+        // ===== PREFILL DRIVER =====
+        driverFieldsContainer.setVisibility(View.GONE);
+
+        if (user instanceof Driver) {
+            Driver d = (Driver) user;
             driverFieldsContainer.setVisibility(View.VISIBLE);
-            etCarModel.setText("Yugo");
-            etCarType.setText("Luxury");
-            etPlate.setText("YU 60 45");
-            etSeats.setText("3");
-            swBaby.setChecked(false);
-            swPet.setChecked(false);
+
+            etCarModel.setText(d.model);
+            if (d.type != null) spCarType.setText(d.type.name(), false);
+            etPlateNumber.setText(d.plateNumber);
+            etCarSeats.setText(d.numberOfSeats != null ? String.valueOf(d.numberOfSeats) : "");
+            swBabyFriendly.setChecked(Boolean.TRUE.equals(d.isBabyFriendly));
+            swPetFriendly.setChecked(Boolean.TRUE.equals(d.isAnimalFriendly));
         }
 
-        btnChangeImage.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
+        MaterialButton btnSaveChanges = view.findViewById(R.id.btnSaveChanges);
 
-        btnSave.setOnClickListener(v -> {
-            User user = SessionManager.getUser(requireContext());
-            if (user != null) {
-                user.firstName = value(etFirstName);
-                user.lastName = value(etLastName);
-                user.address = value(etAddress);
-                user.phoneNumber = value(etPhone);
-                SessionManager.setUser(requireContext(), user);
+        btnSaveChanges.setOnClickListener(v -> {
 
-                SharedPreferences.Editor ed = prefs.edit();
-                if (selectedImageUri != null) ed.putString(KEY_PICTURE_URI, selectedImageUri.toString());
+            RegisteredUser current = SessionManager.getUser();
+            if (current == null) return;
 
-                if (user.role == Role.driver) {
-                    ed.putString(KEY_CAR_MODEL, value(etCarModel));
-                    ed.putString(KEY_CAR_TYPE, value(etCarType));
-                    ed.putString(KEY_PLATE, value(etPlate));
-                    ed.putString(KEY_SEATS, value(etSeats));
-                    ed.putBoolean(KEY_BABY, swBaby.isChecked());
-                    ed.putBoolean(KEY_PET, swPet.isChecked());
-                }
+            Object payload;
 
-                ed.apply();
+            // ===== DRIVER =====
+            if (current instanceof Driver) {
+
+                String firstName = etFirstName.getText().toString();
+                String lastName = etLastName.getText().toString();
+                String address = etAddress.getText().toString();
+                String phone = etPhone.getText().toString();
+
+                String model = etCarModel.getText().toString();
+                String plate = etPlateNumber.getText().toString();
+
+                String seatsStr = etCarSeats.getText().toString();
+                Integer seats = seatsStr.isEmpty() ? null : Integer.parseInt(seatsStr);
+
+                String ct = spCarType.getText().toString();
+                CarType type = ct.isEmpty() ? null : CarType.valueOf(ct);
+
+                Boolean babyFriendly = swBabyFriendly.isChecked();
+                Boolean petFriendly = swPetFriendly.isChecked();
+
+                UpdateDriverDTO dto = new UpdateDriverDTO(
+                        firstName, lastName, address, phone,
+                        model, type, plate, seats,
+                        babyFriendly, petFriendly
+                );
+
+                RegisteredUserAPI api = ApiClient.getRetrofit().create(RegisteredUserAPI.class);
+
+                api.createDriverAccountUpdateRequest(current.id, dto)
+                        .enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                if (!response.isSuccessful()) return;
+
+                                Toast.makeText(requireContext(),
+                                        "Update request sent to admin",
+                                        Toast.LENGTH_SHORT).show();
+
+                                NavHostFragment.findNavController(UpdateAccountFragment.this)
+                                        .popBackStack();
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) { }
+                        });
+
+                return; // IMPORTANT: stop here so it doesn't fall through to updateUser
+            // ===== PASSENGER / ADMIN =====
+            } else {
+                current.firstName = etFirstName.getText().toString();
+                current.lastName = etLastName.getText().toString();
+                current.address = etAddress.getText().toString();
+                current.phoneNumber = etPhone.getText().toString();
+
+                payload = current;
             }
 
-            NavController navController = NavHostFragment.findNavController(this);
-            navController.popBackStack();
+            RegisteredUserAPI api =
+                    ApiClient.getRetrofit().create(RegisteredUserAPI.class);
+
+            api.updateUser(current.id, payload)
+                    .enqueue(new Callback<JsonObject>() {
+                        @Override
+                        public void onResponse(Call<JsonObject> call,
+                                               Response<JsonObject> response) {
+
+                            if (!response.isSuccessful() || response.body() == null) return;
+
+                            JsonObject json = response.body();
+                            Gson gson = new Gson();
+
+                            String role = json.get("role").getAsString();
+                            RegisteredUser freshUser;
+
+                            switch (role) {
+                                case "Driver":
+                                    freshUser = gson.fromJson(json, Driver.class);
+                                    break;
+                                case "Passenger":
+                                    freshUser = gson.fromJson(json, Passenger.class);
+                                    break;
+                                case "Admin":
+                                    freshUser = gson.fromJson(json, Admin.class);
+                                    break;
+                                default:
+                                    return;
+                            }
+
+                            SessionManager.setUser(freshUser);
+
+                            NavHostFragment.findNavController(UpdateAccountFragment.this)
+                                    .popBackStack();
+                        }
+
+                        @Override
+                        public void onFailure(Call<JsonObject> call, Throwable t) { }
+                    });
+
         });
     }
 
-    private String value(TextInputEditText et) {
-        return et.getText() != null ? et.getText().toString().trim() : "";
-    }
 }

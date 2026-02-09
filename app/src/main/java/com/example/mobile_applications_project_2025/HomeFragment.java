@@ -47,7 +47,7 @@ public class HomeFragment extends Fragment {
 
         Button btnOdjava = view.findViewById(R.id.btnOdjava);
         btnOdjava.setOnClickListener(v -> {
-            SessionManager.clear(requireContext());
+            SessionManager.clear();
 
             NavController navController = NavHostFragment.findNavController(this);
 

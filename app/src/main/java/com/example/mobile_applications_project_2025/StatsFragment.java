@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.mobile_applications_project_2025.Model.Enumerator.Role;
+
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -61,10 +63,10 @@ public class StatsFragment extends Fragment {
         TextView moneySum = view.findViewById(R.id.tvMoneySum);
         TextView moneyAvg = view.findViewById(R.id.tvMoneyAvg);
 
-        String role = SessionManager.getRole(getContext());
-        if (role != null) role = "passenger";
+        Role role = SessionManager.getRole();
+        if (role != null) role = Role.Passenger;
 
-        if (role.equals("admin")) {
+        if (role == Role.Admin) {
             ridesSum.setText("3140");
             ridesAvg.setText("100");
             kmSum.setText("3010");

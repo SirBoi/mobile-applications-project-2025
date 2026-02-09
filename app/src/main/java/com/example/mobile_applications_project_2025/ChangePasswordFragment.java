@@ -7,15 +7,24 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.example.mobile_applications_project_2025.Model.User;
+import com.example.mobile_applications_project_2025.Model.Admin;
+import com.example.mobile_applications_project_2025.Model.Driver;
+import com.example.mobile_applications_project_2025.Model.Passenger;
+import com.example.mobile_applications_project_2025.Model.RegisteredUser;
+import com.example.mobile_applications_project_2025.Network.APIs.RegisteredUserAPI;
+import com.example.mobile_applications_project_2025.Network.ApiClient;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChangePasswordFragment extends Fragment {
     public ChangePasswordFragment() {
@@ -40,48 +49,78 @@ public class ChangePasswordFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        TextInputEditText etPassword = view.findViewById(R.id.etPassword);
+
+        TextInputEditText etNewPassword = view.findViewById(R.id.etPassword);
         TextInputEditText etConfirmPassword = view.findViewById(R.id.etConfirmPassword);
-        MaterialButton btnSave = view.findViewById(R.id.btnSavePassword);
+        MaterialButton btnSavePassword = view.findViewById(R.id.btnSavePassword);
 
-        btnSave.setOnClickListener(v -> {
-            String p1 = etPassword.getText() != null ? etPassword.getText().toString() : "";
-            String p2 = etConfirmPassword.getText() != null ? etConfirmPassword.getText().toString() : "";
+        btnSavePassword.setOnClickListener(v -> {
 
-            /*
-            if (!isPasswordValid(p1)) {
-                Toast.makeText(requireContext(), "Invalid password", Toast.LENGTH_SHORT).show();
+            RegisteredUser user = SessionManager.getUser();
+            if (user == null) return;
+
+            String newPass = etNewPassword.getText().toString();
+            String confirmPass = etConfirmPassword.getText().toString();
+
+            // ---- VALIDATION ----
+            if (newPass.isEmpty() || confirmPass.isEmpty()) {
+                if (newPass.isEmpty()) etNewPassword.setError("Required");
+                if (confirmPass.isEmpty()) etConfirmPassword.setError("Required");
                 return;
             }
-            if (!TextUtils.equals(p1, p2)) {
-                Toast.makeText(requireContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
+
+            if (!newPass.equals(confirmPass)) {
+                etConfirmPassword.setError("Passwords do not match");
                 return;
             }
-             */
 
-            User u = SessionManager.getUser(requireContext());
-            if (u != null) {
-                u.password = p1;
-                SessionManager.setUser(requireContext(), u);
+            if (newPass.equals(user.password)) {
+                etNewPassword.setError("New password must be different");
+                return;
             }
 
-            NavHostFragment.findNavController(this).popBackStack();
+            // ---- UPDATE PASSWORD ----
+            user.password = newPass;
+
+            RegisteredUserAPI api =
+                    ApiClient.getRetrofit().create(RegisteredUserAPI.class);
+
+            api.updateUser(user.id, user).enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call,
+                                       Response<JsonObject> response) {
+
+                    if (!response.isSuccessful() || response.body() == null) return;
+
+                    JsonObject json = response.body();
+                    Gson gson = new Gson();
+
+                    String role = json.get("role").getAsString();
+                    RegisteredUser updated;
+
+                    switch (role) {
+                        case "Driver":
+                            updated = gson.fromJson(json, Driver.class);
+                            break;
+                        case "Passenger":
+                            updated = gson.fromJson(json, Passenger.class);
+                            break;
+                        case "Admin":
+                            updated = gson.fromJson(json, Admin.class);
+                            break;
+                        default:
+                            return;
+                    }
+
+                    SessionManager.setUser(updated);
+
+                    NavHostFragment.findNavController(ChangePasswordFragment.this)
+                            .popBackStack();
+                }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) { }
+            });
         });
-    }
-
-    private boolean isPasswordValid(String p) {
-        if (p == null) return false;
-        String s = p.trim();
-        if (s.length() < 8) return false;
-        boolean hasUpper = false;
-        boolean hasLower = false;
-        boolean hasDigit = false;
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (Character.isUpperCase(c)) hasUpper = true;
-            else if (Character.isLowerCase(c)) hasLower = true;
-            else if (Character.isDigit(c)) hasDigit = true;
-        }
-        return hasUpper && hasLower && hasDigit;
     }
 }

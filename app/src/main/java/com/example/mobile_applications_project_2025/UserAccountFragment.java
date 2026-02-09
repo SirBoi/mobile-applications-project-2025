@@ -5,7 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.mobile_applications_project_2025.Model.Enumerator.Role;
-import com.example.mobile_applications_project_2025.Model.User;
-import com.google.android.material.button.MaterialButton;
+import com.example.mobile_applications_project_2025.Model.RegisteredUser;
 
 public class UserAccountFragment extends Fragment {
     public UserAccountFragment() {
@@ -56,15 +54,15 @@ public class UserAccountFragment extends Fragment {
 
         ivProfile.setImageResource(R.drawable.ic_launcher_foreground);
 
-        User u = SessionManager.getUser(requireContext());
+        RegisteredUser u = SessionManager.getUser();
         if (u != null) {
             String first = u.firstName != null ? u.firstName : "";
             String last = u.lastName != null ? u.lastName : "";
             String full = (first + " " + last).trim();
-            tvFullName.setText(full.isEmpty() ? "User" : full);
+            tvFullName.setText(full.isEmpty() ? "RegisteredUser" : full);
             tvEmail.setText(u.mail != null ? u.mail : "");
 
-            boolean isDriver = u.role == Role.driver;
+            boolean isDriver = u.role == Role.Driver;
             driverFieldsContainer.setVisibility(isDriver ? View.VISIBLE : View.GONE);
 
             if (isDriver) {
@@ -77,7 +75,7 @@ public class UserAccountFragment extends Fragment {
                 tvPetFriendly.setText("—");
             }
         } else {
-            //tvFullName.setText("User");
+            //tvFullName.setText("RegisteredUser");
             tvFullName.setText("Aleksa Aleksic");
             //tvEmail.setText("");
             tvEmail.setText("aleksic@gmail.com");

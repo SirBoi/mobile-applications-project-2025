@@ -7,13 +7,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.example.mobile_applications_project_2025.Model.User;
+import com.example.mobile_applications_project_2025.Model.RegisteredUser;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
@@ -60,11 +58,10 @@ public class DriverActivationFragment extends Fragment {
             }
              */
 
-            User u = SessionManager.getUser(requireContext());
-            if (u == null) u = new User();
+            RegisteredUser u = SessionManager.getUser();
+            if (u == null) u = new RegisteredUser();
             u.password = p1;
-            SessionManager.setUser(requireContext(), u);
-            SessionManager.setLoggedIn(requireContext(), true);
+            SessionManager.setUser(u);
 
             new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Account activated")

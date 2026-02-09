@@ -97,8 +97,8 @@ public class ManageDriversFragment extends Fragment {
         tvEmail.setText(d.mail);
         tvAddress.setText(d.address);
         tvPhone.setText(d.phoneNumber);
-        tvCarModel.setText(d.carModel);
-        tvCarType.setText(d.carType.name());
+        tvCarModel.setText(d.model);
+        tvCarType.setText(d.type.name());
         tvPlate.setText(d.plateNumber);
         tvSeats.setText(String.valueOf(d.numberOfSeats));
         tvBaby.setText(d.isBabyFriendly ? "Yes" : "No");
@@ -113,11 +113,13 @@ public class ManageDriversFragment extends Fragment {
 
     private List<Driver> seed() {
         List<Driver> list = new ArrayList<>();
-        list.add(new Driver("1", Role.driver, "marko.jovanovic@mail.com", "", "Marko", "Jovanovic", "Bulevar Oslobodjenja 12, Novi Sad", "+381 64 111 222", null, 67, "Skoda Octavia", CarType.standard, "NS-123-AB", 4, true, true));
-        list.add(new Driver("2", Role.driver, "ana.petrovic@mail.com", "", "Ana", "Petrovic", "Bulevar Oslobodjenja 12, Novi Sad", "+381 64 111 222", null, 67, "Skoda Octavia", CarType.standard, "NS-123-AB", 4, true, true));
-        list.add(new Driver("3", Role.driver, "nikola.ilic@mail.com", "", "Nikola", "Ilic", "Bulevar Oslobodjenja 12, Novi Sad", "+381 64 111 222", null, 67, "Skoda Octavia", CarType.standard, "NS-123-AB", 4, true, true));
-        list.add(new Driver("4", Role.driver, "jelena.stojanovic@mail.com", "", "Jelena", "Stojanovic", "Bulevar Oslobodjenja 12, Novi Sad", "+381 64 111 222", null, 67, "Skoda Octavia", CarType.standard, "NS-123-AB", 4, true, true));
-        list.add(new Driver("5", Role.driver, "milan.kovacevic@mail.com", "", "Milan", "Kovacevic", "Bulevar Oslobodjenja 12, Novi Sad", "+381 64 111 222", null, 67, "Skoda Octavia", CarType.standard, "NS-123-AB", 4, true, true));
+        /*
+        list.add(new Driver("1", Role.Driver, "marko.jovanovic@mail.com", "", "Marko", "Jovanovic", "Bulevar Oslobodjenja 12, Novi Sad", "+381 64 111 222", null, 67, "Skoda Octavia", CarType.Standard, "NS-123-AB", 4, true, true));
+        list.add(new Driver("2", Role.Driver, "ana.petrovic@mail.com", "", "Ana", "Petrovic", "Bulevar Oslobodjenja 12, Novi Sad", "+381 64 111 222", null, 67, "Skoda Octavia", CarType.Standard, "NS-123-AB", 4, true, true));
+        list.add(new Driver("3", Role.Driver, "nikola.ilic@mail.com", "", "Nikola", "Ilic", "Bulevar Oslobodjenja 12, Novi Sad", "+381 64 111 222", null, 67, "Skoda Octavia", CarType.Standard, "NS-123-AB", 4, true, true));
+        list.add(new Driver("4", Role.Driver, "jelena.stojanovic@mail.com", "", "Jelena", "Stojanovic", "Bulevar Oslobodjenja 12, Novi Sad", "+381 64 111 222", null, 67, "Skoda Octavia", CarType.Standard, "NS-123-AB", 4, true, true));
+        list.add(new Driver("5", Role.Driver, "milan.kovacevic@mail.com", "", "Milan", "Kovacevic", "Bulevar Oslobodjenja 12, Novi Sad", "+381 64 111 222", null, 67, "Skoda Octavia", CarType.Standard, "NS-123-AB", 4, true, true));
+        */
         return list;
     }
 }

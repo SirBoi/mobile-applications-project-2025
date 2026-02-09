@@ -101,4 +101,7 @@
         android:id="@+id/rideCreationFragment"
         android:name="com.example.mobile_applications_project_2025.RideCreationFragment" />
 
+    <fragment
+        android:id="@+id/adminDriverAccountUpdateRequestFragment"
+        android:name="com.example.mobile_applications_project_2025.AdminDriverAccountUpdateRequestFragment" />
 </navigation>

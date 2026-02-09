@@ -13,6 +13,7 @@ import androidx.navigation.NavGraph;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.mobile_applications_project_2025.Model.Enumerator.Role;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         navController = navHostFragment.getNavController();
 
-        boolean loggedIn = SessionManager.isLoggedIn(this);
+        boolean loggedIn = SessionManager.isLoggedIn();
         //String role = SessionManager.getRole(this);
         //if (role == null) role = "passenger";
 
@@ -49,12 +50,12 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
-            if (!SessionManager.isLoggedIn(this)) {
+            if (!SessionManager.isLoggedIn()) {
                 return false;
             }
 
-            String role = SessionManager.getRole(this);
-            if (role == null) role = "passenger";
+            Role role = SessionManager.getRole();
+            if (role == null) role = Role.Passenger;
 
             // Naredaj rutiranje za svaki id
             if (id == R.id.myAccountFragment) {
@@ -62,10 +63,10 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             } else if (id == R.id.driverRideHistoryFragment) {
-                if (role.equals("admin")) {
+                if (role == Role.Admin) {
                     navController.navigate(R.id.userSearchFragment);
                     return true;
-                } else if (role.equals("driver")) {
+                } else if (role == Role.Driver) {
                     navController.navigate(R.id.driverRideHistoryFragment);
                     return true;
                 } else {
@@ -117,6 +118,8 @@ public class MainActivity extends AppCompatActivity {
             navController.popBackStack(id, false);
         });
 
+        bottomNav.setSelectedItemId(R.id.homeFragment);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -126,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         //NavigationUI.setupWithNavController(bottomNav, navController); sto su dva???
 
         navController.addOnDestinationChangedListener((controller, destination, args) -> {
-            setBottomNavEnabled(SessionManager.isLoggedIn(this));
+            setBottomNavEnabled(SessionManager.isLoggedIn());
         });
 
         setBottomNavEnabled(loggedIn);
@@ -135,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        setBottomNavEnabled(SessionManager.isLoggedIn(this));
+        setBottomNavEnabled(SessionManager.isLoggedIn());
     }
 
     private void setBottomNavEnabled(boolean enabled) {
