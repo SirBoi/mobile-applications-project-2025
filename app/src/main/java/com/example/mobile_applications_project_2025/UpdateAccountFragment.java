@@ -1,7 +1,10 @@
 package com.example.mobile_applications_project_2025;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +23,10 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.mobile_applications_project_2025.DTO.UpdateDriverDTO;
 import com.example.mobile_applications_project_2025.Model.Admin;
+import com.example.mobile_applications_project_2025.Model.Driver;
 import com.example.mobile_applications_project_2025.Model.Enumerator.CarType;
-import com.example.mobile_applications_project_2025.Model.Enumerator.Role;
 import com.example.mobile_applications_project_2025.Model.Passenger;
 import com.example.mobile_applications_project_2025.Model.RegisteredUser;
-import com.example.mobile_applications_project_2025.Model.Driver;
 import com.example.mobile_applications_project_2025.Network.APIs.RegisteredUserAPI;
 import com.example.mobile_applications_project_2025.Network.ApiClient;
 import com.google.android.material.button.MaterialButton;
@@ -33,6 +35,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import okhttp3.MediaType;
@@ -47,6 +52,25 @@ public class UpdateAccountFragment extends Fragment {
     private ActivityResultLauncher<String> imagePickerLauncher;
     private Uri selectedImageUri;
 
+    // Views we need across methods
+    private ImageView ivProfile;
+
+    private TextInputEditText etFirstName;
+    private TextInputEditText etLastName;
+    private TextInputEditText etAddress;
+    private TextInputEditText etPhone;
+
+    private LinearLayout driverFieldsContainer;
+    private TextInputEditText etCarModel;
+    private AutoCompleteTextView spCarType;
+    private TextInputEditText etPlateNumber;
+    private TextInputEditText etCarSeats;
+    private MaterialSwitch swBabyFriendly;
+    private MaterialSwitch swPetFriendly;
+
+    private MaterialButton btnChangeImage;
+    private MaterialButton btnSaveChanges;
+
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater,
@@ -59,28 +83,40 @@ public class UpdateAccountFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
-        imagePickerLauncher =
-                registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+        // ===== Image picker =====
+        imagePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                uri -> {
                     if (uri != null) {
                         selectedImageUri = uri;
+                        if (ivProfile != null) {
+                            // local preview
+                            ivProfile.setImageURI(uri);
+                        }
                     }
-                });
+                }
+        );
 
-        ImageView ivProfile = view.findViewById(R.id.ivProfile);
+        // ===== Bind views =====
+        ivProfile = view.findViewById(R.id.ivProfile);
 
-        TextInputEditText etFirstName = view.findViewById(R.id.etFirstName);
-        TextInputEditText etLastName = view.findViewById(R.id.etLastName);
-        TextInputEditText etAddress = view.findViewById(R.id.etAddress);
-        TextInputEditText etPhone = view.findViewById(R.id.etPhone);
+        etFirstName = view.findViewById(R.id.etFirstName);
+        etLastName = view.findViewById(R.id.etLastName);
+        etAddress = view.findViewById(R.id.etAddress);
+        etPhone = view.findViewById(R.id.etPhone);
 
-        LinearLayout driverFieldsContainer = view.findViewById(R.id.driverFieldsContainer);
-        TextInputEditText etCarModel = view.findViewById(R.id.etCarModel);
-        AutoCompleteTextView spCarType = view.findViewById(R.id.spCarType);
-        TextInputEditText etPlateNumber = view.findViewById(R.id.etPlateNumber);
-        TextInputEditText etCarSeats = view.findViewById(R.id.etCarSeats);
-        MaterialSwitch swBabyFriendly = view.findViewById(R.id.swBabyFriendly);
-        MaterialSwitch swPetFriendly = view.findViewById(R.id.swPetFriendly);
+        driverFieldsContainer = view.findViewById(R.id.driverFieldsContainer);
+        etCarModel = view.findViewById(R.id.etCarModel);
+        spCarType = view.findViewById(R.id.spCarType);
+        etPlateNumber = view.findViewById(R.id.etPlateNumber);
+        etCarSeats = view.findViewById(R.id.etCarSeats);
+        swBabyFriendly = view.findViewById(R.id.swBabyFriendly);
+        swPetFriendly = view.findViewById(R.id.swPetFriendly);
 
+        btnChangeImage = view.findViewById(R.id.btnChangeImage);
+        btnSaveChanges = view.findViewById(R.id.btnSaveChanges);
+
+        // ===== Car type dropdown =====
         String[] carTypes = new String[CarType.values().length];
         for (int i = 0; i < CarType.values().length; i++) {
             carTypes[i] = CarType.values()[i].name();
@@ -92,23 +128,19 @@ public class UpdateAccountFragment extends Fragment {
                 carTypes
         ));
 
-        MaterialButton btnChangeImage = view.findViewById(R.id.btnChangeImage);
-        btnChangeImage.setOnClickListener(v ->
-                imagePickerLauncher.launch("image/*")
-        );
+        // ===== Button listeners =====
+        btnChangeImage.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
 
+        // ===== Prefill =====
         RegisteredUser user = SessionManager.getUser();
         if (user == null) return;
 
-        // ===== PREFILL COMMON =====
         etFirstName.setText(user.firstName);
         etLastName.setText(user.lastName);
         etAddress.setText(user.address);
         etPhone.setText(user.phoneNumber);
 
-        // ===== PREFILL DRIVER =====
         driverFieldsContainer.setVisibility(View.GONE);
-
         if (user instanceof Driver) {
             Driver d = (Driver) user;
             driverFieldsContainer.setVisibility(View.VISIBLE);
@@ -121,114 +153,195 @@ public class UpdateAccountFragment extends Fragment {
             swPetFriendly.setChecked(Boolean.TRUE.equals(d.isAnimalFriendly));
         }
 
-        MaterialButton btnSaveChanges = view.findViewById(R.id.btnSaveChanges);
-
+        // ===== Save =====
         btnSaveChanges.setOnClickListener(v -> {
-
             RegisteredUser current = SessionManager.getUser();
             if (current == null) return;
 
-            Object payload;
+            RegisteredUserAPI api = ApiClient.getRetrofit().create(RegisteredUserAPI.class);
 
-            // ===== DRIVER =====
-            if (current instanceof Driver) {
+            // 1) If user selected an image -> upload it FIRST to:
+            //    PUT /api/users/{id}/picture with @RequestPart("file")
+            if (selectedImageUri != null) {
+                MultipartBody.Part part;
+                try {
+                    part = uriToMultipart(selectedImageUri);
+                } catch (IOException e) {
+                    Toast.makeText(requireContext(), "Failed to read selected image", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                String firstName = etFirstName.getText().toString();
-                String lastName = etLastName.getText().toString();
-                String address = etAddress.getText().toString();
-                String phone = etPhone.getText().toString();
+                api.uploadProfilePicture(current.id, part).enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (!response.isSuccessful()) {
+                            Toast.makeText(requireContext(), "Picture upload failed", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-                String model = etCarModel.getText().toString();
-                String plate = etPlateNumber.getText().toString();
+                        // 2) After upload succeeds -> continue existing save logic
+                        doExistingSaveLogic(current);
+                    }
 
-                String seatsStr = etCarSeats.getText().toString();
-                Integer seats = seatsStr.isEmpty() ? null : Integer.parseInt(seatsStr);
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(requireContext(), "Upload error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
 
-                String ct = spCarType.getText().toString();
-                CarType type = ct.isEmpty() ? null : CarType.valueOf(ct);
-
-                Boolean babyFriendly = swBabyFriendly.isChecked();
-                Boolean petFriendly = swPetFriendly.isChecked();
-
-                UpdateDriverDTO dto = new UpdateDriverDTO(
-                        firstName, lastName, address, phone,
-                        model, type, plate, seats,
-                        babyFriendly, petFriendly
-                );
-
-                RegisteredUserAPI api = ApiClient.getRetrofit().create(RegisteredUserAPI.class);
-
-                api.createDriverAccountUpdateRequest(current.id, dto)
-                        .enqueue(new Callback<Void>() {
-                            @Override
-                            public void onResponse(Call<Void> call, Response<Void> response) {
-                                if (!response.isSuccessful()) return;
-
-                                Toast.makeText(requireContext(),
-                                        "Update request sent to admin",
-                                        Toast.LENGTH_SHORT).show();
-
-                                NavHostFragment.findNavController(UpdateAccountFragment.this)
-                                        .popBackStack();
-                            }
-
-                            @Override
-                            public void onFailure(Call<Void> call, Throwable t) { }
-                        });
-
-                return; // IMPORTANT: stop here so it doesn't fall through to updateUser
-            // ===== PASSENGER / ADMIN =====
-            } else {
-                current.firstName = etFirstName.getText().toString();
-                current.lastName = etLastName.getText().toString();
-                current.address = etAddress.getText().toString();
-                current.phoneNumber = etPhone.getText().toString();
-
-                payload = current;
+                return; // IMPORTANT: wait for callback
             }
 
-            RegisteredUserAPI api =
-                    ApiClient.getRetrofit().create(RegisteredUserAPI.class);
+            // no image selected -> just do existing save logic
+            doExistingSaveLogic(current);
+        });
+    }
 
-            api.updateUser(current.id, payload)
-                    .enqueue(new Callback<JsonObject>() {
+    private void doExistingSaveLogic(@NonNull RegisteredUser current) {
+
+        RegisteredUserAPI api = ApiClient.getRetrofit().create(RegisteredUserAPI.class);
+
+        // ===== DRIVER: send update request to admin =====
+        if (current instanceof Driver) {
+
+            String firstName = safeText(etFirstName);
+            String lastName = safeText(etLastName);
+            String address = safeText(etAddress);
+            String phone = safeText(etPhone);
+
+            String model = safeText(etCarModel);
+            String plate = safeText(etPlateNumber);
+
+            String seatsStr = safeText(etCarSeats);
+            Integer seats = seatsStr.isEmpty() ? null : Integer.parseInt(seatsStr);
+
+            String ct = spCarType.getText() != null ? spCarType.getText().toString().trim() : "";
+            CarType type = ct.isEmpty() ? null : CarType.valueOf(ct);
+
+            Boolean babyFriendly = swBabyFriendly.isChecked();
+            Boolean petFriendly = swPetFriendly.isChecked();
+
+            UpdateDriverDTO dto = new UpdateDriverDTO(
+                    firstName, lastName, address, phone,
+                    model, type, plate, seats,
+                    babyFriendly, petFriendly
+            );
+
+            api.createDriverAccountUpdateRequest(current.id, dto)
+                    .enqueue(new Callback<Void>() {
                         @Override
-                        public void onResponse(Call<JsonObject> call,
-                                               Response<JsonObject> response) {
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            if (!response.isSuccessful()) return;
 
-                            if (!response.isSuccessful() || response.body() == null) return;
-
-                            JsonObject json = response.body();
-                            Gson gson = new Gson();
-
-                            String role = json.get("role").getAsString();
-                            RegisteredUser freshUser;
-
-                            switch (role) {
-                                case "Driver":
-                                    freshUser = gson.fromJson(json, Driver.class);
-                                    break;
-                                case "Passenger":
-                                    freshUser = gson.fromJson(json, Passenger.class);
-                                    break;
-                                case "Admin":
-                                    freshUser = gson.fromJson(json, Admin.class);
-                                    break;
-                                default:
-                                    return;
-                            }
-
-                            SessionManager.setUser(freshUser);
+                            Toast.makeText(requireContext(),
+                                    "Update request sent to admin",
+                                    Toast.LENGTH_SHORT).show();
 
                             NavHostFragment.findNavController(UpdateAccountFragment.this)
                                     .popBackStack();
                         }
 
                         @Override
-                        public void onFailure(Call<JsonObject> call, Throwable t) { }
+                        public void onFailure(Call<Void> call, Throwable t) { }
                     });
 
-        });
+            return;
+        }
+
+        // ===== PASSENGER / ADMIN: update immediately =====
+        current.firstName = safeText(etFirstName);
+        current.lastName = safeText(etLastName);
+        current.address = safeText(etAddress);
+        current.phoneNumber = safeText(etPhone);
+
+        api.updateUser(current.id, current)
+                .enqueue(new Callback<JsonObject>() {
+                    @Override
+                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                        if (!response.isSuccessful() || response.body() == null) return;
+
+                        JsonObject json = response.body();
+                        Gson gson = new Gson();
+
+                        String role = json.get("role").getAsString();
+                        RegisteredUser freshUser;
+
+                        switch (role) {
+                            case "Driver":
+                                freshUser = gson.fromJson(json, Driver.class);
+                                break;
+                            case "Passenger":
+                                freshUser = gson.fromJson(json, Passenger.class);
+                                break;
+                            case "Admin":
+                                freshUser = gson.fromJson(json, Admin.class);
+                                break;
+                            default:
+                                return;
+                        }
+
+                        SessionManager.setUser(freshUser);
+
+                        NavHostFragment.findNavController(UpdateAccountFragment.this)
+                                .popBackStack();
+                    }
+
+                    @Override
+                    public void onFailure(Call<JsonObject> call, Throwable t) { }
+                });
     }
 
+    private String safeText(@Nullable TextInputEditText et) {
+        return (et != null && et.getText() != null) ? et.getText().toString().trim() : "";
+    }
+
+    // ===== Uri -> Multipart ("file") =====
+    private MultipartBody.Part uriToMultipart(@NonNull Uri uri) throws IOException {
+        ContentResolver resolver = requireContext().getContentResolver();
+
+        String fileName = getFileName(uri);
+        if (fileName == null) fileName = "profile.jpg";
+
+        File tempFile = new File(requireContext().getCacheDir(), fileName);
+
+        try (InputStream in = resolver.openInputStream(uri);
+             FileOutputStream out = new FileOutputStream(tempFile)) {
+
+            if (in == null) throw new IOException("Cannot open input stream");
+
+            byte[] buf = new byte[8192];
+            int len;
+            while ((len = in.read(buf)) != -1) out.write(buf, 0, len);
+        }
+
+        String mime = resolver.getType(uri);
+        if (mime == null) mime = "image/*";
+
+        RequestBody rb = RequestBody.create(tempFile, MediaType.parse(mime));
+
+        // MUST match backend: @RequestPart("file")
+        return MultipartBody.Part.createFormData("file", tempFile.getName(), rb);
+    }
+
+    @Nullable
+    private String getFileName(@NonNull Uri uri) {
+        if ("content".equals(uri.getScheme())) {
+            Cursor cursor = null;
+            try {
+                cursor = requireContext().getContentResolver()
+                        .query(uri, null, null, null, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    int idx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (idx >= 0) return cursor.getString(idx);
+                }
+            } finally {
+                if (cursor != null) cursor.close();
+            }
+        }
+
+        String path = uri.getPath();
+        if (path == null) return null;
+        int cut = path.lastIndexOf('/');
+        return (cut != -1) ? path.substring(cut + 1) : path;
+    }
 }

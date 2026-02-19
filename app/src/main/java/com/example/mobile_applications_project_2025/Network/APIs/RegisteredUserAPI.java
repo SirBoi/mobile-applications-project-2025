@@ -1,9 +1,7 @@
 package com.example.mobile_applications_project_2025.Network.APIs;
 
-import com.example.mobile_applications_project_2025.DTO.LoginRequestDTO;
 import com.example.mobile_applications_project_2025.DTO.UpdateDriverDTO;
 import com.example.mobile_applications_project_2025.Model.DriverAccountUpdateRequest;
-import com.example.mobile_applications_project_2025.Model.RegisteredUser;
 import com.google.gson.JsonObject;
 
 import java.util.List;
