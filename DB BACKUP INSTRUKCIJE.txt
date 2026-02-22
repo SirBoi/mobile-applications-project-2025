@@ -1,0 +1,15 @@
+1. Otvori AdminPg
+2. U listi lijevo, pod Databases, desni klik pa Create > Database...
+3. U Database unijeti ime baze Project2025DB
+4. Klikni Save
+5. Desni klik na bazu, pa klik na Restore...
+6. Format je Custom or tar
+7. U Filename kliknuti na ikonicu foldera, pa kliknuti na backup.sql fajl, pa open
+7.1 Ako se backup.sql fajl ne pojavljuje u folderu, desno od File name polja se nalazi izbor tipa datoteke.
+    To treba promjeniti na SQL File .sql da bi se sql fajl pokazao
+8. Klikni Restore
+9. Ako nema crvenih popup-ova, dobro je uradjeno
+10. Desni klik na bazu, pa klik na Query Tool
+11. Ukucati select * from registered_user
+12. Pokrenuti klikon na ikonicu strelice iznad, ili sa F5
+13. Ako se prikazu neki podaci u tabeli ispod, baza je backup-ovana
