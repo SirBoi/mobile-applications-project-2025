@@ -243,54 +243,7 @@ public class PassengerRideHistoryFragment extends Fragment {
     }
 
     private void openRideDetailsPopup(Ride ride) {
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_passenger_ride_details, null, false);
-
-        TextView tvAll = dialogView.findViewById(R.id.tvRideAllData);
-        Button btnToggleFavorite = dialogView.findViewById(R.id.btnToggleFavorite);
-
-        boolean isFav = isRideFavoriteForLoggedPassenger(ride);
-
-        btnToggleFavorite.setText(isFav ? "Remove from favorites" : "Add to favorites");
-
-        tvAll.setText(buildRideDetailsText(ride, isFav));
-
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                .setView(dialogView)
-                .setCancelable(true)
-                .create();
-
-        btnToggleFavorite.setOnClickListener(v -> {
-            if (!SessionManager.isLoggedIn() || SessionManager.getUser() == null) return;
-            Long passengerId = SessionManager.getUser().getId();
-
-            btnToggleFavorite.setEnabled(false);
-
-            Call<Void> call = isFav
-                    ? rideAPI.unfavoriteRide(ride.id, passengerId)
-                    : rideAPI.favoriteRide(ride.id, passengerId);
-
-            call.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                    if (!response.isSuccessful()) {
-                        Toast.makeText(requireContext(), "Failed (" + response.code() + ")", Toast.LENGTH_SHORT).show();
-                        btnToggleFavorite.setEnabled(true);
-                        return;
-                    }
-                    Toast.makeText(requireContext(), isFav ? "Removed from favorites" : "Added to favorites", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                    fetchPage(); // refresh list (important if Favorites-only filter is ON)
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                    Toast.makeText(requireContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                    btnToggleFavorite.setEnabled(true);
-                }
-            });
-        });
-
-        dialog.show();
+        com.example.mobile_applications_project_2025.UI.RideDetailsDialogs.showPassengerRideDetails(requireContext(), rideAPI, ride, this::fetchPage);
     }
 
     private boolean isRideFavoriteForLoggedPassenger(Ride ride) {

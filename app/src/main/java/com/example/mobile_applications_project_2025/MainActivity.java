@@ -14,6 +14,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.mobile_applications_project_2025.Model.Enumerator.Role;
+import com.example.mobile_applications_project_2025.Model.RegisteredUser;
+import com.example.mobile_applications_project_2025.Network.UserActivityTracker;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -151,5 +153,21 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < menu.size(); i++) {
             menu.getItem(i).setEnabled(enabled);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        RegisteredUser u = SessionManager.getUser();
+        if (u == null || u.getId() == null) return;
+
+        UserActivityTracker.getInstance().start();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        UserActivityTracker.getInstance().stop();
     }
 }

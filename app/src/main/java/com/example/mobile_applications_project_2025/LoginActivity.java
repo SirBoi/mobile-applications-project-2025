@@ -106,9 +106,11 @@ public class LoginActivity extends AppCompatActivity {
                         SessionManager.setUser(user);
                         SessionManager.setRole(Role.valueOf(role));
 
+                        /*
                         if (SessionManager.getRole() == Role.Driver) {
                             UserActivityTracker.getInstance().start();
                         }
+                        */
 
                         Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show();
 

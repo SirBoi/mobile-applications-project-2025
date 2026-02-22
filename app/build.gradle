@@ -54,4 +54,5 @@ dependencies {
     implementation libs.rxandroid
 
     implementation libs.lifecycle.process
+    implementation libs.mpandroidchart
 }

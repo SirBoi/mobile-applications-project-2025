@@ -3,7 +3,6 @@ package com.example.mobile_applications_project_2025.Network;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.example.mobile_applications_project_2025.Model.Enumerator.Role;
 import com.example.mobile_applications_project_2025.Network.APIs.UserActivityAPI;
 import com.example.mobile_applications_project_2025.SessionManager;
 
@@ -27,7 +26,7 @@ public class UserActivityTracker {
         public void run() {
             if (!running) return;
 
-            if (SessionManager.isLoggedIn() && SessionManager.getUser() != null && SessionManager.getRole() == Role.Driver) {
+            if (SessionManager.isLoggedIn() && SessionManager.getUser() != null && SessionManager.getUser().getId() != null) {
                 Long userId = SessionManager.getUser().getId();
                 api.heartbeat(userId).enqueue(new Callback<Void>() {
                     @Override public void onResponse(Call<Void> call, Response<Void> response) { }
@@ -59,8 +58,7 @@ public class UserActivityTracker {
         running = false;
         handler.removeCallbacks(task);
 
-        // Optional: close session explicitly when app goes background
-        if (SessionManager.isLoggedIn() && SessionManager.getUser() != null) {
+        if (SessionManager.isLoggedIn() && SessionManager.getUser() != null && SessionManager.getUser().getId() != null) {
             Long userId = SessionManager.getUser().getId();
             api.stop(userId).enqueue(new Callback<Void>() {
                 @Override public void onResponse(Call<Void> call, Response<Void> response) { }

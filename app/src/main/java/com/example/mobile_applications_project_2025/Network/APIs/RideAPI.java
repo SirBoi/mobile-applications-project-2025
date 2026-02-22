@@ -44,8 +44,8 @@ public interface RideAPI {
     Call<PageResponseDTO<Ride>> getPassengerRidesPaged(
             @Path("passengerId") Long passengerId,
             @Query("statuses") List<String> statuses,
-            @Query("from") String fromIso,         // nullable
-            @Query("to") String toIso,             // nullable
+            @Query("from") String fromIso,
+            @Query("to") String toIso,
             @Query("favoritesOnly") boolean favoritesOnly,
             @Query("page") int page,
             @Query("size") int size
@@ -56,4 +56,13 @@ public interface RideAPI {
 
     @DELETE("api/rides/{rideId}/favorite/{passengerId}")
     Call<Void> unfavoriteRide(@Path("rideId") Long rideId, @Path("passengerId") Long passengerId);
+
+    @GET("api/rides/passenger/{passengerId}/current")
+    Call<Ride> getPassengerCurrentRide(@Path("passengerId") Long passengerId);
+
+    @GET("api/rides/driver/{driverId}/current")
+    Call<Ride> getDriverCurrentRide(@Path("driverId") Long driverId);
+
+    @GET("api/rides/driver/{driverId}/next")
+    Call<Ride> getDriverNextScheduledRide(@Path("driverId") Long driverId);
 }

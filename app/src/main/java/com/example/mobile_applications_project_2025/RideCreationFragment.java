@@ -266,6 +266,7 @@ public class RideCreationFragment extends Fragment {
             }
 
             route.addresses = routeAddresses;
+            route.distanceKm = (double) totalDistanceKm();
             ride.origin = getAddress(0);
             ride.destination = getAddress(stops.size() - 1);
             ride.route = route;
@@ -694,19 +695,12 @@ public class RideCreationFragment extends Fragment {
         return sb.toString().trim();
     }
 
-    /**
-     * Overwrites current stop chips + stop list with addresses from favourite route.
-     * - First stop becomes route[0]
-     * - First stop is NON-REMOVABLE
-     * - Distances remain internal only (not displayed)
-     */
     private void applyFavouriteRouteToStops(Route route) {
         if (route == null || route.addresses == null || route.addresses.isEmpty()) {
             Toast.makeText(requireContext(), "Selected route has no addresses.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // clear existing
         stops.clear();
         cgStops.removeAllViews();
 
@@ -714,13 +708,21 @@ public class RideCreationFragment extends Fragment {
             Address a = route.addresses.get(i);
             String text = addressToStopString(a);
 
-            boolean removable = (i != 0);               // first is non-removable
-            float dist = (i == 0) ? 0f : generateRandomDistance(); // keep hidden simulation
+            boolean removable = (i != 0);
+
+            float dist;
+            if (i == 0) {
+                dist = 0f;
+            } else if (route.distanceKm != null && route.distanceKm > 0 && route.addresses.size() > 1) {
+                float perLeg = (float) (route.distanceKm / (route.addresses.size() - 1));
+                dist = perLeg;
+            } else {
+                dist = generateRandomDistance();
+            }
 
             addStopChip(text, dist, removable);
         }
 
-        // also overwrite stop input text, optional
         etStop.setText("");
     }
 

@@ -1,11 +1,13 @@
 package com.example.mobile_applications_project_2025;
 
+import android.app.DatePickerDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.text.TextUtils;
@@ -17,18 +19,37 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mobile_applications_project_2025.DTO.DailyStatPointDTO;
+import com.example.mobile_applications_project_2025.DTO.StatsResponseDTO;
 import com.example.mobile_applications_project_2025.Model.Driver;
 import com.example.mobile_applications_project_2025.Model.Enumerator.Role;
 import com.example.mobile_applications_project_2025.Model.RegisteredUser;
 import com.example.mobile_applications_project_2025.Network.APIs.RegisteredUserAPI;
+import com.example.mobile_applications_project_2025.Network.APIs.StatsAPI;
 import com.example.mobile_applications_project_2025.Network.ApiClient;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
@@ -72,7 +93,20 @@ public class UserAccountFragment extends Fragment {
     private TextView tvStatusLabel;
     private TextView tvActivatedLabel;
 
-    private View cardRides, cardKm, cardMoney;
+    private View statsContainer;
+    private TextView tvStatsFromDate;
+    private TextView tvStatsToDate;
+    private MaterialButton btnStatsGenerate;
+
+    private LocalDate statsFrom;
+    private LocalDate statsTo;
+
+    private BarChart chartRides;
+    private BarChart chartKm;
+    private BarChart chartMoney;
+
+    private static final DateTimeFormatter UI_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault());
+    private static final DateTimeFormatter ISO_FMT = DateTimeFormatter.ISO_LOCAL_DATE;
 
     // ---- State ----
     private long userId = -1L;
@@ -128,15 +162,16 @@ public class UserAccountFragment extends Fragment {
         passengerFieldsContainer = view.findViewById(R.id.passengerFieldsContainer);
         tvFavouriteRoutesCount = view.findViewById(R.id.tvFavouriteRoutesCount);
 
-        cardRides = view.findViewById(R.id.cardRides);
-        cardKm = view.findViewById(R.id.cardKm);
-        cardMoney = view.findViewById(R.id.cardMoney);
-
         tvStatusLabel = view.findViewById(R.id.tvStatusLabel);
         tvActivatedLabel = view.findViewById(R.id.tvActivatedLabel);
 
         // Default placeholder
         ivProfile.setImageResource(R.drawable.ic_launcher_foreground);
+
+        statsContainer = view.findViewById(R.id.statsContainer);
+        tvStatsFromDate = view.findViewById(R.id.tvStatsFromDate);
+        tvStatsToDate = view.findViewById(R.id.tvStatsToDate);
+        btnStatsGenerate = view.findViewById(R.id.btnStatsGenerate);
 
         // Read nav arg: userId
         if (getArguments() != null) {
@@ -169,6 +204,13 @@ public class UserAccountFragment extends Fragment {
                     boolean loadedIsPassenger = roleStr != null && roleStr.equalsIgnoreCase("Passenger");
                     boolean loadedIsAdmin = roleStr != null && roleStr.equalsIgnoreCase("Admin");
                     loadedIsDriver = (roleStr != null && roleStr.equalsIgnoreCase("Driver"));
+                    boolean targetHasStats = loadedIsPassenger || loadedIsDriver;
+                    setViewVisible(statsContainer, targetHasStats);
+
+                    if (targetHasStats) {
+                        setupStatsUiForTarget(roleStr);
+                        loadTargetStats(roleStr);
+                    }
 
                     renderBasicFromJson(loadedUserJson, loadedIsPassenger, loadedIsAdmin);
 
@@ -177,11 +219,6 @@ public class UserAccountFragment extends Fragment {
                     if (loadedIsPassenger) {
                         renderPassengerFromJson(loadedUserJson);
                     }
-
-                    // Driver-only graphs/cards
-                    setViewVisible(cardRides, loadedIsDriver);
-                    setViewVisible(cardKm, loadedIsDriver);
-                    setViewVisible(cardMoney, loadedIsDriver);
 
                     // Driver-only fields
                     driverFieldsContainer.setVisibility(loadedIsDriver ? View.VISIBLE : View.GONE);
@@ -194,8 +231,7 @@ public class UserAccountFragment extends Fragment {
                     RegisteredUser me = SessionManager.getUser();
                     boolean isAdminViewer = (me != null && me.role == Role.Admin);
 
-                    boolean targetBlockable = roleStr != null &&
-                            (roleStr.equalsIgnoreCase("Driver") || roleStr.equalsIgnoreCase("Passenger"));
+                    boolean targetBlockable = roleStr != null && (roleStr.equalsIgnoreCase("Driver") || roleStr.equalsIgnoreCase("Passenger"));
 
                     btnBlockActions.setVisibility(isAdminViewer && targetBlockable ? View.VISIBLE : View.GONE);
                     if (isAdminViewer && targetBlockable) {
@@ -444,5 +480,250 @@ public class UserAccountFragment extends Fragment {
         }
 
         return def;
+    }
+
+    private void setupStatsUiForTarget(String roleStr) {
+        YearMonth ym = YearMonth.now();
+        statsFrom = ym.atDay(1);
+        statsTo = ym.atEndOfMonth();
+
+        tvStatsFromDate.setText(statsFrom.format(UI_FMT));
+        tvStatsToDate.setText(statsTo.format(UI_FMT));
+
+        tvStatsFromDate.setOnClickListener(v -> showDatePicker(statsFrom, picked -> {
+            statsFrom = picked;
+            tvStatsFromDate.setText(statsFrom.format(UI_FMT));
+        }));
+
+        tvStatsToDate.setOnClickListener(v -> showDatePicker(statsTo, picked -> {
+            statsTo = picked;
+            tvStatsToDate.setText(statsTo.format(UI_FMT));
+        }));
+
+        // Titles depending on viewed user's role
+        TextView tvRidesTitle = getView().findViewById(R.id.tvRidesTitle);
+        TextView tvKmTitle = getView().findViewById(R.id.tvKmTitle);
+        TextView tvMoneyTitle = getView().findViewById(R.id.tvMoneyTitle);
+
+        boolean isDriver = roleStr != null && roleStr.equalsIgnoreCase("Driver");
+        boolean isPassenger = roleStr != null && roleStr.equalsIgnoreCase("Passenger");
+
+        if (isDriver) {
+            tvRidesTitle.setText("Number of rides given per day");
+            tvKmTitle.setText("Kilometers driven per day");
+            tvMoneyTitle.setText("Money earned per day");
+        } else if (isPassenger) {
+            tvRidesTitle.setText("Number of rides taken per day");
+            tvKmTitle.setText("Kilometers traveled per day");
+            tvMoneyTitle.setText("Money spent per day");
+        }
+
+        // Replace placeholders in FrameLayouts with BarCharts
+        ViewGroup ridesContainer = getView().findViewById(R.id.graphRidesContainer);
+        ViewGroup kmContainer = getView().findViewById(R.id.graphKmContainer);
+        ViewGroup moneyContainer = getView().findViewById(R.id.graphMoneyContainer);
+
+        chartRides = new BarChart(requireContext());
+        chartKm = new BarChart(requireContext());
+        chartMoney = new BarChart(requireContext());
+
+        ridesContainer.removeAllViews();
+        kmContainer.removeAllViews();
+        moneyContainer.removeAllViews();
+
+        ridesContainer.addView(chartRides, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        kmContainer.addView(chartKm, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        moneyContainer.addView(chartMoney, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        styleChart(chartRides, false);
+        styleChart(chartKm, true);
+        styleChart(chartMoney, true);
+
+        btnStatsGenerate.setOnClickListener(v -> {
+            if (!validateStatsRange()) return;
+            loadTargetStats(roleStr);
+        });
+
+        // Reset sums
+        ((TextView) getView().findViewById(R.id.tvRidesSum)).setText("0");
+        ((TextView) getView().findViewById(R.id.tvRidesAvg)).setText("0");
+        ((TextView) getView().findViewById(R.id.tvKmSum)).setText("0");
+        ((TextView) getView().findViewById(R.id.tvKmAvg)).setText("0");
+        ((TextView) getView().findViewById(R.id.tvMoneySum)).setText("0");
+        ((TextView) getView().findViewById(R.id.tvMoneyAvg)).setText("0");
+    }
+
+    private void loadTargetStats(String roleStr) {
+        if (roleStr == null) return;
+
+        StatsAPI api = ApiClient.getRetrofit().create(StatsAPI.class);
+
+        String fromIso = statsFrom.format(ISO_FMT);
+        String toIso = statsTo.format(ISO_FMT);
+
+        Call<StatsResponseDTO> call;
+
+        if (roleStr.equalsIgnoreCase("Driver")) {
+            call = api.driverStats(userId, fromIso, toIso);
+        } else if (roleStr.equalsIgnoreCase("Passenger")) {
+            call = api.passengerStats(userId, fromIso, toIso);
+        } else {
+            return;
+        }
+
+        call.enqueue(new Callback<StatsResponseDTO>() {
+            @Override
+            public void onResponse(@NonNull Call<StatsResponseDTO> call, @NonNull Response<StatsResponseDTO> response) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    Toast.makeText(requireContext(), "Failed to load statistics (" + response.code() + ")", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                renderStatsPoints(response.body().getPoints());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StatsResponseDTO> call, @NonNull Throwable t) {
+                Toast.makeText(requireContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void renderStatsPoints(List<DailyStatPointDTO> points) {
+        if (points == null) points = new ArrayList<>();
+
+        final List<String> xLabels = new ArrayList<>();
+        List<BarEntry> ridesEntries = new ArrayList<>();
+        List<BarEntry> kmEntries = new ArrayList<>();
+        List<BarEntry> moneyEntries = new ArrayList<>();
+
+        double ridesTotal = 0;
+        double kmTotal = 0;
+        double moneyTotal = 0;
+
+        for (int i = 0; i < points.size(); i++) {
+            DailyStatPointDTO p = points.get(i);
+
+            LocalDate d = LocalDate.parse(p.getDate(), ISO_FMT);
+            xLabels.add(String.format(Locale.getDefault(), "%02d", d.getDayOfMonth()));
+
+            float rides = p.getRides();
+            float km = (float) p.getKm();
+            float money = (float) p.getMoney();
+
+            ridesEntries.add(new BarEntry(i, rides));
+            kmEntries.add(new BarEntry(i, km));
+            moneyEntries.add(new BarEntry(i, money));
+
+            ridesTotal += rides;
+            kmTotal += km;
+            moneyTotal += money;
+        }
+
+        int days = Math.max(points.size(), 1);
+
+        ((TextView) getView().findViewById(R.id.tvRidesSum)).setText(formatNumber(ridesTotal));
+        ((TextView) getView().findViewById(R.id.tvRidesAvg)).setText(formatNumber(ridesTotal / days));
+
+        ((TextView) getView().findViewById(R.id.tvKmSum)).setText(formatNumber(kmTotal));
+        ((TextView) getView().findViewById(R.id.tvKmAvg)).setText(formatNumber(kmTotal / days));
+
+        ((TextView) getView().findViewById(R.id.tvMoneySum)).setText(formatNumber(moneyTotal));
+        ((TextView) getView().findViewById(R.id.tvMoneyAvg)).setText(formatNumber(moneyTotal / days));
+
+        setBarData(chartRides, ridesEntries, xLabels, false);
+        setBarData(chartKm, kmEntries, xLabels, true);
+        setBarData(chartMoney, moneyEntries, xLabels, true);
+    }
+
+    private void setBarData(BarChart chart, List<BarEntry> entries, List<String> xLabels, boolean allowDecimals) {
+        BarDataSet set = new BarDataSet(entries, "");
+        set.setDrawValues(false);
+
+        int barColor = ContextCompat.getColor(requireContext(), R.color.orange_action);
+        set.setColor(barColor);
+
+        BarData data = new BarData(set);
+        data.setBarWidth(0.9f);
+
+        chart.setData(data);
+
+        XAxis x = chart.getXAxis();
+        x.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getAxisLabel(float value, AxisBase axis) {
+                int idx = Math.round(value);
+                if (idx < 0 || idx >= xLabels.size()) return "";
+                return xLabels.get(idx);
+            }
+        });
+
+        YAxis y = chart.getAxisLeft();
+        y.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getAxisLabel(float value, AxisBase axis) {
+                if (!allowDecimals) return String.valueOf((int) value);
+                if (Math.abs(value - Math.round(value)) < 0.0001) return String.valueOf((int) Math.round(value));
+                return String.format(Locale.getDefault(), "%.1f", value);
+            }
+        });
+
+        chart.getAxisRight().setEnabled(false);
+        chart.setFitBars(true);
+        chart.invalidate();
+    }
+
+    private void styleChart(BarChart chart, boolean allowDecimals) {
+        chart.setNoDataText("Press Generate to load.");
+        chart.setDrawGridBackground(false);
+        chart.setDrawBorders(false);
+        chart.setPinchZoom(false);
+        chart.setScaleEnabled(false);
+        chart.setDoubleTapToZoomEnabled(false);
+        chart.getLegend().setEnabled(false);
+
+        Description d = new Description();
+        d.setText("");
+        chart.setDescription(d);
+
+        XAxis x = chart.getXAxis();
+        x.setPosition(XAxis.XAxisPosition.BOTTOM);
+        x.setGranularity(1f);
+        x.setDrawGridLines(false);
+        x.setLabelCount(6, false);
+
+        YAxis left = chart.getAxisLeft();
+        left.setAxisMinimum(0f);
+        left.setDrawGridLines(true);
+    }
+
+    private boolean validateStatsRange() {
+        if (statsFrom == null || statsTo == null) return false;
+        if (statsTo.isBefore(statsFrom)) {
+            Toast.makeText(requireContext(), "'To' must be after 'From'.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        long days = ChronoUnit.DAYS.between(statsFrom, statsTo);
+        if (days > 31) {
+            Toast.makeText(requireContext(), "Date range cannot exceed 31 days.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private String formatNumber(double v) {
+        if (Math.abs(v - Math.round(v)) < 0.0001) return String.valueOf((long) Math.round(v));
+        return String.format(Locale.getDefault(), "%.2f", v);
+    }
+
+    private interface OnPickedDate { void onPicked(LocalDate d); }
+
+    private void showDatePicker(LocalDate initial, OnPickedDate cb) {
+        new DatePickerDialog(
+                requireContext(),
+                (dp, y, m, d) -> cb.onPicked(LocalDate.of(y, m + 1, d)),
+                initial.getYear(),
+                initial.getMonthValue() - 1,
+                initial.getDayOfMonth()
+        ).show();
     }
 }
