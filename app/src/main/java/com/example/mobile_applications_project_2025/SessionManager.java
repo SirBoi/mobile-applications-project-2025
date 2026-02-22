@@ -28,8 +28,8 @@ public class SessionManager {
         return null;
     }
 
-    public static void setRole(Role role) {
-        role = role;
+    public static void setRole(Role r) {
+        role = r;
     }
 
     public static void clear() {

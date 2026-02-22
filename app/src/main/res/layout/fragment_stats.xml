@@ -128,13 +128,6 @@
                     android:layout_height="160dp"
                     android:layout_marginTop="12dp">
 
-                    <ImageView
-                        android:id="@+id/imgRidesGraph"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitCenter"
-                        android:contentDescription="@string/app_name" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -211,13 +204,6 @@
                     android:layout_height="160dp"
                     android:layout_marginTop="12dp">
 
-                    <ImageView
-                        android:id="@+id/imgKmGraph"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitCenter"
-                        android:contentDescription="@string/app_name" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -293,13 +279,6 @@
                     android:layout_height="160dp"
                     android:layout_marginTop="12dp">
 
-                    <ImageView
-                        android:id="@+id/imgMoneyGraph"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitCenter"
-                        android:contentDescription="@string/app_name" />
                 </FrameLayout>
 
                 <LinearLayout

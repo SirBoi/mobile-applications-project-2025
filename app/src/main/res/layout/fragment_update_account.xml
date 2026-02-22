@@ -13,12 +13,13 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/ivProfile"
             android:layout_width="96dp"
             android:layout_height="96dp"
             android:layout_gravity="center_horizontal"
             android:scaleType="centerCrop"
+            android:src="@drawable/ic_launcher_foreground"
             android:contentDescription="@string/app_name" />
 
         <com.google.android.material.button.MaterialButton

@@ -119,6 +119,10 @@ public class AdminDriverAccountUpdateRequestFragment extends Fragment {
 
         details.removeAllViews();
 
+        if (r.driver.isBlocked) {
+            addRow(details, "Account status", safe("Blocked"));
+            addRow(details, "Block reason", safe(r.driver.blockMessage));
+        }
         addRow(details, "Email", safe(r.driver != null ? r.driver.mail : null));
         addRow(details, "First name", safe(r.firstName));
         addRow(details, "Last name", safe(r.lastName));

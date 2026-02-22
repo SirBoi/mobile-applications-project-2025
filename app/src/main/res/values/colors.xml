@@ -4,4 +4,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="darker_white">#DDDDDDFF</color>
     <color name="orange_action">#F7990C</color>
+    <color name="button_disabled_bg">#BDBDBD</color>
+    <color name="button_disabled_text">#666666</color>
 </resources>

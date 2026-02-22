@@ -3,6 +3,8 @@ package com.example.mobile_applications_project_2025.Model;
 import com.example.mobile_applications_project_2025.Model.Enumerator.Role;
 import com.example.mobile_applications_project_2025.Model.Enumerator.UserStatus;
 
+import java.time.LocalDateTime;
+
 public class RegisteredUser {
     public Long id;
     public Role role;
@@ -17,12 +19,15 @@ public class RegisteredUser {
     public Boolean isBlocked;
     public String blockMessage;
     public UserStatus status;
+    public Boolean isActivated;
+    public String ActivationToken;
+    public LocalDateTime activationTokenExpiry;
 
     public RegisteredUser() {
 
     }
 
-    public RegisteredUser(Long id, Role role, String mail, String password, String firstName, String lastName, String address, String phoneNumber, String picture, Integer dailyActiveMinutes, Boolean isBlocked, String blockMessage, UserStatus status) {
+    public RegisteredUser(Long id, Role role, String mail, String password, String firstName, String lastName, String address, String phoneNumber, String picture, Integer dailyActiveMinutes, Boolean isBlocked, String blockMessage, UserStatus status, Boolean isActivated, String activationToken, LocalDateTime activationTokenExpiry) {
         this.id = id;
         this.role = role;
         this.mail = mail;
@@ -36,6 +41,9 @@ public class RegisteredUser {
         this.isBlocked = isBlocked;
         this.blockMessage = blockMessage;
         this.status = status;
+        this.isActivated = isActivated;
+        ActivationToken = activationToken;
+        this.activationTokenExpiry = activationTokenExpiry;
     }
 
     public Long getId() {
@@ -142,6 +150,30 @@ public class RegisteredUser {
         this.status = status;
     }
 
+    public Boolean getActivated() {
+        return isActivated;
+    }
+
+    public void setActivated(Boolean activated) {
+        isActivated = activated;
+    }
+
+    public String getActivationToken() {
+        return ActivationToken;
+    }
+
+    public void setActivationToken(String activationToken) {
+        ActivationToken = activationToken;
+    }
+
+    public LocalDateTime getActivationTokenExpiry() {
+        return activationTokenExpiry;
+    }
+
+    public void setActivationTokenExpiry(LocalDateTime activationTokenExpiry) {
+        this.activationTokenExpiry = activationTokenExpiry;
+    }
+
     @Override
     public String toString() {
         return "RegisteredUser{" +
@@ -158,6 +190,9 @@ public class RegisteredUser {
                 ", isBlocked=" + isBlocked +
                 ", blockMessage='" + blockMessage + '\'' +
                 ", status=" + status +
+                ", isActivated=" + isActivated +
+                ", ActivationToken='" + ActivationToken + '\'' +
+                ", activationTokenExpiry=" + activationTokenExpiry +
                 '}';
     }
 }

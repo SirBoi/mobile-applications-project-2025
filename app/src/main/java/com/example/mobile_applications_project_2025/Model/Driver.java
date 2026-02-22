@@ -31,7 +31,7 @@ public class Driver extends RegisteredUser {
     }
 
     public Driver(Long id, Role role, String mail, String password, String firstName, String lastName, String address, String phoneNumber, String picture, Integer dailyActiveMinutes, Boolean isBlocked, String blockMessage, UserStatus status, String model, CarType type, String plateNumber, Integer numberOfSeats, Boolean isBabyFriendly, Boolean isAnimalFriendly, CarStatus carStatus, Boolean isProfileActivated) {
-        super(id, role, mail, password, firstName, lastName, address, phoneNumber, picture, dailyActiveMinutes, isBlocked, blockMessage, status);
+        super(id, role, mail, password, firstName, lastName, address, phoneNumber, picture, dailyActiveMinutes, isBlocked, blockMessage, status, null, null, null);
         this.model = model;
         this.type = type;
         this.plateNumber = plateNumber;

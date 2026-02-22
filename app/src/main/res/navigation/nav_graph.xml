@@ -82,10 +82,6 @@
         android:name="com.example.mobile_applications_project_2025.HomeFragment" />
 
     <fragment
-        android:id="@+id/manageDriversFragment"
-        android:name="com.example.mobile_applications_project_2025.ManageDriversFragment" />
-
-    <fragment
         android:id="@+id/driverCreationFragment"
         android:name="com.example.mobile_applications_project_2025.DriverCreationFragment" />
 
@@ -104,4 +100,8 @@
     <fragment
         android:id="@+id/adminDriverAccountUpdateRequestFragment"
         android:name="com.example.mobile_applications_project_2025.AdminDriverAccountUpdateRequestFragment" />
+
+    <fragment
+        android:id="@+id/adminRegisterDriverFragment"
+        android:name="com.example.mobile_applications_project_2025.AdminRegisterDriverFragment" />
 </navigation>

@@ -33,6 +33,7 @@ import retrofit2.Response;
 
 public class MyAccountFragment extends Fragment {
     private final ExecutorService imgExecutor = Executors.newSingleThreadExecutor();
+    private RegisteredUser user;
 
     public MyAccountFragment() {
         // Required empty public constructor
@@ -56,16 +57,10 @@ public class MyAccountFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
         ImageView ivProfile = view.findViewById(R.id.ivProfile);
+        ivProfile.setImageResource(R.drawable.ic_launcher_foreground);
         TextView tvFullName = view.findViewById(R.id.tvFullName);
         TextView tvEmail = view.findViewById(R.id.tvEmail);
-
-        LinearLayout infoContainer = view.findViewById(R.id.infoContainer);
-
-        LinearLayout driverFieldsContainer = view.findViewById(R.id.driverFieldsContainer);
-        if (driverFieldsContainer != null) driverFieldsContainer.setVisibility(View.GONE);
-
         TextView tvDailyActiveMinutes = view.findViewById(R.id.tvDailyActiveMinutes);
         TextView tvCarModel = view.findViewById(R.id.tvCarModel);
         TextView tvCarType = view.findViewById(R.id.tvCarType);
@@ -74,36 +69,61 @@ public class MyAccountFragment extends Fragment {
         TextView tvBabyFriendly = view.findViewById(R.id.tvBabyFriendly);
         TextView tvPetFriendly = view.findViewById(R.id.tvPetFriendly);
 
-        MaterialButton btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
+        LinearLayout infoContainer = view.findViewById(R.id.infoContainer);
+        LinearLayout driverFieldsContainer = view.findViewById(R.id.driverFieldsContainer);
+        if (driverFieldsContainer != null) driverFieldsContainer.setVisibility(View.GONE);
 
-        btnUpdateProfile.setOnClickListener(v ->
-                NavHostFragment.findNavController(this)
-                        .navigate(R.id.updateAccountFragment)
-        );
-
-        MaterialButton btnChangePassword = view.findViewById(R.id.btnChangePassword);
-
-        btnChangePassword.setOnClickListener(v ->
-                NavHostFragment.findNavController(this)
-                        .navigate(R.id.changePasswordFragment)
-        );
-
-        ivProfile.setImageResource(R.drawable.ic_launcher_foreground);
-
-        RegisteredUser user = SessionManager.getUser();
+        user = SessionManager.getUser();
         if (user == null) return;
 
-        com.google.android.material.button.MaterialButton btnDriverUpdateRequests =
-                view.findViewById(R.id.btnDriverUpdateRequests);
+        MaterialButton btnViewActiveRides = view.findViewById(R.id.btnViewActiveRides);
+        MaterialButton btnUpdatePricing = view.findViewById(R.id.btnUpdatePricing);
+        MaterialButton btnRegisterDriver = view.findViewById(R.id.btnRegisterDriver);
+        MaterialButton btnDriverUpdateRequests = view.findViewById(R.id.btnDriverUpdateRequests);
+        MaterialButton btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
+        MaterialButton btnChangePassword = view.findViewById(R.id.btnChangePassword);
+
+        btnRegisterDriver.setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigate(R.id.adminRegisterDriverFragment)
+        );
+        btnDriverUpdateRequests.setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigate(R.id.adminDriverAccountUpdateRequestFragment)
+        );
+        btnUpdateProfile.setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigate(R.id.updateAccountFragment)
+        );
+        btnChangePassword.setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigate(R.id.changePasswordFragment)
+        );
 
         if (user.role == Role.Admin) {
+            btnViewActiveRides.setVisibility(View.GONE);
+            btnUpdatePricing.setVisibility(View.VISIBLE);
+            btnRegisterDriver.setVisibility(View.VISIBLE);
             btnDriverUpdateRequests.setVisibility(View.VISIBLE);
-            btnDriverUpdateRequests.setOnClickListener(v ->
-                    NavHostFragment.findNavController(this)
-                            .navigate(R.id.adminDriverAccountUpdateRequestFragment)
-            );
-        } else {
+            btnUpdateProfile.setVisibility(View.VISIBLE);
+            btnChangePassword.setVisibility(View.VISIBLE);
+        } else if (user.role == Role.Driver) {
+            btnViewActiveRides.setVisibility(View.GONE);
+            btnUpdatePricing.setVisibility(View.GONE);
+            btnRegisterDriver.setVisibility(View.GONE);
             btnDriverUpdateRequests.setVisibility(View.GONE);
+            btnUpdateProfile.setVisibility(View.VISIBLE);
+            btnChangePassword.setVisibility(View.VISIBLE);
+        } else if (user.role == Role.Passenger) {
+            btnViewActiveRides.setVisibility(View.GONE);
+            btnUpdatePricing.setVisibility(View.GONE);
+            btnRegisterDriver.setVisibility(View.GONE);
+            btnDriverUpdateRequests.setVisibility(View.GONE);
+            btnUpdateProfile.setVisibility(View.VISIBLE);
+            btnChangePassword.setVisibility(View.VISIBLE);
+        } else {
+            btnViewActiveRides.setVisibility(View.GONE);
+            btnUpdatePricing.setVisibility(View.GONE);
+            btnRegisterDriver.setVisibility(View.GONE);
+            btnDriverUpdateRequests.setVisibility(View.GONE);
+            btnUpdateProfile.setVisibility(View.GONE);
+            btnChangePassword.setVisibility(View.GONE);
         }
 
         RegisteredUserAPI api = ApiClient.getRetrofit().create(RegisteredUserAPI.class);
@@ -129,8 +149,7 @@ public class MyAccountFragment extends Fragment {
         });
 
         tvFullName.setText(
-                (user.firstName != null ? user.firstName : "") + " " +
-                        (user.lastName != null ? user.lastName : "")
+                (user.firstName != null ? user.firstName : "") + " " + (user.lastName != null ? user.lastName : "")
         );
         tvEmail.setText(user.mail != null ? user.mail : "");
 
@@ -169,22 +188,28 @@ public class MyAccountFragment extends Fragment {
                 if (name.equalsIgnoreCase("lastName")) continue;
                 if (name.equalsIgnoreCase("mail")) continue;
                 if (name.equalsIgnoreCase("picture")) continue;
-
+                if (name.equalsIgnoreCase("favouriteRoutes")) continue;
+                if (name.equalsIgnoreCase("activationToken")) continue;
+                if (name.equalsIgnoreCase("activationTokenExpiry")) continue;
+                if (name.equalsIgnoreCase("isActivated")) continue;
                 if (name.equalsIgnoreCase("isProfileActivated")) continue;
                 if (name.equalsIgnoreCase("carStatus")) continue;
-                if (name.equalsIgnoreCase("blockMessage")) continue;
                 if (name.equalsIgnoreCase("id")) continue;
-                if (name.equalsIgnoreCase("isBlocked")) continue;
                 if (name.equalsIgnoreCase("role")) continue;
                 if (name.equalsIgnoreCase("status")) continue;
 
-                // hide passenger-only stuff conditionally
-                if (obj instanceof com.example.mobile_applications_project_2025.Model.Passenger) {
-                    if (name.equalsIgnoreCase("favouriteRoutes")) continue;
-                    if (name.equalsIgnoreCase("dailyActiveMinutes")) continue;
+                if (!user.isBlocked) {
+                    if (name.equalsIgnoreCase("isBlocked")) continue;
+                    if (name.equalsIgnoreCase("blockMessage")) continue;
                 }
 
                 // hide passenger-only stuff conditionally
+                if (obj instanceof com.example.mobile_applications_project_2025.Model.Passenger) {
+
+                    if (name.equalsIgnoreCase("dailyActiveMinutes")) continue;
+                }
+
+                // hide admin-only stuff conditionally
                 if (obj instanceof com.example.mobile_applications_project_2025.Model.Admin) {
                     if (name.equalsIgnoreCase("dailyActiveMinutes")) continue;
                 }

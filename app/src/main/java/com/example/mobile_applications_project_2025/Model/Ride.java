@@ -13,11 +13,11 @@ public class Ride {
     public Integer rideDuration;
     public Float ridePrice;
     public Passenger passenger;
-    public List<Passenger> passengers;
+    public List<String> passengers;
     public Driver driver;
     public Boolean hasStarted;
-    public LocalDateTime rideStartDatetime;
-    public LocalDateTime rideFinishDatetime;
+    public String rideStartDatetime;
+    public String rideFinishDatetime;
     public RideStatus status;
     public RegisteredUser cancelledBy;
     public Boolean isPanicPressed;
@@ -26,7 +26,7 @@ public class Ride {
 
     }
 
-    public Ride(Long id, Address origin, Address destination, Route route, Integer rideDuration, Float ridePrice, Passenger passenger, List<Passenger> passengers, Driver driver, Boolean hasStarted, LocalDateTime rideStartDatetime, LocalDateTime rideFinishDatetime, RideStatus status, RegisteredUser cancelledBy, Boolean isPanicPressed) {
+    public Ride(Long id, Address origin, Address destination, Route route, Integer rideDuration, Float ridePrice, Passenger passenger, List<String> passengers, Driver driver, Boolean hasStarted, String rideStartDatetime, String rideFinishDatetime, RideStatus status, RegisteredUser cancelledBy, Boolean isPanicPressed) {
         this.id = id;
         this.origin = origin;
         this.destination = destination;
@@ -100,11 +100,11 @@ public class Ride {
         this.passenger = passenger;
     }
 
-    public List<Passenger> getPassengers() {
+    public List<String> getPassengers() {
         return passengers;
     }
 
-    public void setPassengers(List<Passenger> passengers) {
+    public void setPassengers(List<String> passengers) {
         this.passengers = passengers;
     }
 
@@ -124,19 +124,19 @@ public class Ride {
         this.hasStarted = hasStarted;
     }
 
-    public LocalDateTime getRideStartDatetime() {
+    public String getRideStartDatetime() {
         return rideStartDatetime;
     }
 
-    public void setRideStartDatetime(LocalDateTime rideStartDatetime) {
+    public void setRideStartDatetime(String rideStartDatetime) {
         this.rideStartDatetime = rideStartDatetime;
     }
 
-    public LocalDateTime getRideFinishDatetime() {
+    public String getRideFinishDatetime() {
         return rideFinishDatetime;
     }
 
-    public void setRideFinishDatetime(LocalDateTime rideFinishDatetime) {
+    public void setRideFinishDatetime(String rideFinishDatetime) {
         this.rideFinishDatetime = rideFinishDatetime;
     }
 

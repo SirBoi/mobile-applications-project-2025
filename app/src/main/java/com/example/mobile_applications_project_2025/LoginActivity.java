@@ -20,10 +20,12 @@ import com.example.mobile_applications_project_2025.Model.Passenger;
 import com.example.mobile_applications_project_2025.Model.RegisteredUser;
 import com.example.mobile_applications_project_2025.Network.API;
 import com.example.mobile_applications_project_2025.Network.APIs.RegisteredUserAPI;
+import com.example.mobile_applications_project_2025.Network.UserActivityTracker;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.example.mobile_applications_project_2025.Network.UserActivityTracker;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,6 +47,9 @@ public class LoginActivity extends AppCompatActivity {
         TextInputEditText etEmail = findViewById(R.id.etEmail);
         TextInputEditText etPassword = findViewById(R.id.etPassword);
         MaterialButton btnLogin = findViewById(R.id.btnLogin);
+
+        etEmail.setText("passenger1@gmail.com");
+        etPassword.setText("passenger1");
 
         btnLogin.setOnClickListener(view -> {
             String email = etEmail.getText() != null ? etEmail.getText().toString().trim() : "";
@@ -100,6 +105,10 @@ public class LoginActivity extends AppCompatActivity {
 
                         SessionManager.setUser(user);
                         SessionManager.setRole(Role.valueOf(role));
+
+                        if (SessionManager.getRole() == Role.Driver) {
+                            UserActivityTracker.getInstance().start();
+                        }
 
                         Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show();
 

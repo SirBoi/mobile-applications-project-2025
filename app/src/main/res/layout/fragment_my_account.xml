@@ -46,7 +46,7 @@
             android:id="@+id/btnViewActiveRides"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="10dp"
             android:textColor="#FFFFFF"
             android:backgroundTint="@color/orange_action"
             android:text="View active rides" />
@@ -55,10 +55,19 @@
             android:id="@+id/btnUpdatePricing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="10dp"
             android:textColor="#FFFFFF"
             android:backgroundTint="@color/orange_action"
             android:text="Update pricing" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRegisterDriver"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="@color/orange_action"
+            android:text="Register a new driver" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDriverUpdateRequests"
@@ -67,14 +76,13 @@
             android:layout_marginTop="10dp"
             android:textColor="#FFFFFF"
             android:backgroundTint="@color/orange_action"
-            android:text="Driver update requests"
-            android:visibility="gone" />
+            android:text="Driver update requests" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnUpdateProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="10dp"
             android:textColor="#FFFFFF"
             android:backgroundTint="@color/orange_action"
             android:text="Update profile" />
@@ -91,7 +99,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="30dp"
             android:text="Account info"
             android:textAlignment="center"
             android:textSize="16sp"

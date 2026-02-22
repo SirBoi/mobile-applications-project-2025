@@ -2,6 +2,8 @@ package com.example.mobile_applications_project_2025;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
@@ -39,20 +41,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class UpdateAccountFragment extends Fragment {
-
     private ActivityResultLauncher<String> imagePickerLauncher;
     private Uri selectedImageUri;
 
-    // Views we need across methods
     private ImageView ivProfile;
 
     private TextInputEditText etFirstName;
@@ -70,6 +73,8 @@ public class UpdateAccountFragment extends Fragment {
 
     private MaterialButton btnChangeImage;
     private MaterialButton btnSaveChanges;
+
+    private final ExecutorService imgExecutor = Executors.newSingleThreadExecutor();
 
     @Override
     public View onCreateView(
@@ -135,6 +140,28 @@ public class UpdateAccountFragment extends Fragment {
         RegisteredUser user = SessionManager.getUser();
         if (user == null) return;
 
+        final RegisteredUserAPI api = ApiClient.getRetrofit().create(RegisteredUserAPI.class);
+        api.getProfilePicture(user.id).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (!response.isSuccessful() || response.body() == null) return;
+
+                ResponseBody body = response.body();
+                imgExecutor.execute(() -> {
+                    try {
+                        byte[] bytes = body.bytes();
+                        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        if (bmp == null) return;
+                        if (!isAdded()) return;
+                        requireActivity().runOnUiThread(() -> ivProfile.setImageBitmap(bmp));
+                    } catch (IOException ignored) {}
+                });
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {}
+        });
+
         etFirstName.setText(user.firstName);
         etLastName.setText(user.lastName);
         etAddress.setText(user.address);
@@ -157,8 +184,6 @@ public class UpdateAccountFragment extends Fragment {
         btnSaveChanges.setOnClickListener(v -> {
             RegisteredUser current = SessionManager.getUser();
             if (current == null) return;
-
-            RegisteredUserAPI api = ApiClient.getRetrofit().create(RegisteredUserAPI.class);
 
             // 1) If user selected an image -> upload it FIRST to:
             //    PUT /api/users/{id}/picture with @RequestPart("file")

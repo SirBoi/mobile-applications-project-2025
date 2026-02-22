@@ -48,4 +48,10 @@ dependencies {
     implementation libs.okhttp
     implementation libs.logging.interceptor
     implementation libs.circleimageview
+
+    implementation libs.stompprotocolandroid
+    implementation libs.rxjava
+    implementation libs.rxandroid
+
+    implementation libs.lifecycle.process
 }

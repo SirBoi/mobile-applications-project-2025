@@ -17,10 +17,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.mobile_applications_project_2025.Model.Enumerator.Role;
+import com.example.mobile_applications_project_2025.Model.RegisteredUser;
+import com.example.mobile_applications_project_2025.Network.BaseUrl;
+import com.example.mobile_applications_project_2025.Network.UserActivityTracker;
+import com.example.mobile_applications_project_2025.Network.WsPassengerReminders;
+import com.example.mobile_applications_project_2025.Network.WsRideNotifications;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 public class HomeFragment extends Fragment {
+    private final WsRideNotifications wsd = new WsRideNotifications();
+    private final WsPassengerReminders wsp = new WsPassengerReminders();
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -47,6 +56,7 @@ public class HomeFragment extends Fragment {
 
         Button btnOdjava = view.findViewById(R.id.btnOdjava);
         btnOdjava.setOnClickListener(v -> {
+            UserActivityTracker.getInstance().stop();
             SessionManager.clear();
 
             NavController navController = NavHostFragment.findNavController(this);
@@ -60,6 +70,77 @@ public class HomeFragment extends Fragment {
         fab.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.passengerRideOverviewFragment));
 
         ExtendedFloatingActionButton fab2 = view.findViewById(R.id.fabCreateRide);
-        fab2.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(R.id.rideCreationFragment));
+        fab2.setOnClickListener(v -> {
+            RegisteredUser u = SessionManager.getUser();
+
+            if (u != null && Boolean.TRUE.equals(u.getBlocked())) {
+                new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                        .setTitle("Account blocked")
+                        .setMessage(
+                                (u.getBlockMessage() != null && !u.getBlockMessage().trim().isEmpty())
+                                        ? u.getBlockMessage()
+                                        : "You are blocked and cannot create a ride."
+                        )
+                        .setPositiveButton("OK", (d, w) -> d.dismiss())
+                        .show();
+                return;
+            }
+
+            NavHostFragment.findNavController(this).navigate(R.id.rideCreationFragment);
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        RegisteredUser u = SessionManager.getUser();
+        if (u == null || u.getId() == null) return;
+
+        String base = BaseUrl.get(); // e.g. "http://10.0.2.2:8080/"
+        String wsUrl = base.replace("http://", "ws://")
+                .replace("https://", "wss://");
+        if (wsUrl.endsWith("/")) wsUrl = wsUrl.substring(0, wsUrl.length() - 1);
+        wsUrl = wsUrl + "/ws";
+
+        if (u.getRole() == Role.Driver) {
+            wsd.connect(wsUrl, u.getId(), (rideId, message) -> {
+                requireActivity().runOnUiThread(() -> {
+                    new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                            .setTitle("New ride assigned")
+                            .setMessage(message + "\nRide ID: " + rideId)
+                            .setPositiveButton("OK", (d, w) -> d.dismiss())
+                            .show();
+                });
+            });
+        } else if (u.getRole() == Role.Passenger) {
+            wsp.connect(wsUrl, u.getId(), (rideId, minutesBefore, message) -> {
+                requireActivity().runOnUiThread(() -> {
+                    new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                            .setTitle("Ride reminder")
+                            .setMessage(message + "\nRide ID: " + rideId)
+                            .setPositiveButton("OK", (d, w) -> d.dismiss())
+                            .show();
+                });
+            });
+        }
+    }
+
+    @Override
+    public void onStop() {
+        RegisteredUser u = SessionManager.getUser();
+
+        super.onStop();
+
+        try {
+            wsd.disconnect();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            wsp.disconnect();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -16,7 +16,7 @@ public final class ApiClient {
                     .build();
 
             retrofit = new Retrofit.Builder()
-                    .baseUrl(BaseUrl.get()) // centralized base URL
+                    .baseUrl(BaseUrl.get())
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();

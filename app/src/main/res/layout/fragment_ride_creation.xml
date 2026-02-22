@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:fillViewport="true"
     tools:context=".RideCreationFragment">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="20dp">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tvPassengerLabel"
+            <!-- PASSENGERS CHIP LIST (shows added passenger emails) -->
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cgPassengers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:paddingBottom="6dp" />
+                android:paddingBottom="6dp"
+                app:singleLine="false"
+                app:singleSelection="false" />
 
+            <!-- Passenger input + Add button -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -34,36 +37,37 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    app:boxBackgroundMode="outline"
-                    android:layout_marginEnd="10dp">
+                    android:layout_marginEnd="10dp"
+                    app:boxBackgroundMode="outline">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etPassenger"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Passenger"
-                        android:inputType="text" />
+                        android:hint="Passenger (email)"
+                        android:inputType="textEmailAddress" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSetPassenger"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add"
                     android:backgroundTint="@color/orange_action"
+                    android:text="Add"
                     android:textAllCaps="false" />
             </LinearLayout>
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tvStopLabel"
+            <!-- STOPS CHIP LIST (prefilled with Fruskogorska 1 + added stops) -->
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cgStops"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:textSize="14sp"
-                android:textStyle="bold"
                 android:paddingTop="10dp"
-                android:paddingBottom="6dp" />
+                android:paddingBottom="6dp"
+                app:singleLine="false"
+                app:singleSelection="false" />
 
+            <!-- Stop input + Add button -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -73,8 +77,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    app:boxBackgroundMode="outline"
-                    android:layout_marginEnd="10dp">
+                    android:layout_marginEnd="10dp"
+                    app:boxBackgroundMode="outline">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etStop"
@@ -85,20 +89,31 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPickFavouriteRoute"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/orange_action"
+                    android:text="Favorites"
+                    android:textAllCaps="false"
+                    android:layout_marginEnd="8dp"/>
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSetStop"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add"
                     android:backgroundTint="@color/orange_action"
+                    android:text="Add"
                     android:textAllCaps="false" />
             </LinearLayout>
+
         </LinearLayout>
 
+        <!-- Date/time row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvSelectedDateTime"
@@ -112,31 +127,36 @@
                 android:id="@+id/btnPickDateTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Choose date and time"
                 android:backgroundTint="@color/orange_action"
+                android:text="Choose date and time"
                 android:textAllCaps="false" />
         </LinearLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:endIconMode="dropdown_menu"
-            app:boxBackgroundMode="outline">
-
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/ddVehicleType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="30dp"
-                android:paddingRight="30dp"
-                android:hint="Vehicle type"
-                android:inputType="none" />
-        </com.google.android.material.textfield.TextInputLayout>
-
+        <!-- Vehicle type dropdown -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="vertical"
+            android:layout_marginTop="10dp">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vehicle type"
+                android:textStyle="bold"
+                android:paddingBottom="6dp" />
+
+            <Spinner
+                android:id="@+id/spVehicleType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Checkboxes -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/cbBabyFriendly"
@@ -155,6 +175,7 @@
                 android:text="Animal friendly" />
         </LinearLayout>
 
+        <!-- Distance + Price -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -165,9 +186,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:layout_weight="1">
+                android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
@@ -180,15 +201,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingStart="8dp"
-                    android:text="4.5 km" />
+                    android:text="0.00 km" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:layout_weight="1">
+                android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
@@ -205,13 +226,15 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- Create ride -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCreateRide"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Create new ride"
-            android:textAllCaps="false"
+            android:layout_marginTop="22dp"
             android:backgroundTint="@color/orange_action"
-            android:layout_marginTop="22dp" />
+            android:text="Create new ride"
+            android:textAllCaps="false" />
+
     </LinearLayout>
 </ScrollView>
