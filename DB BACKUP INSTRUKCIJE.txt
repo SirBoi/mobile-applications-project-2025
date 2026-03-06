@@ -11,5 +11,5 @@
 9. Ako nema crvenih popup-ova, dobro je uradjeno
 10. Desni klik na bazu, pa klik na Query Tool
 11. Ukucati select * from registered_user
-12. Pokrenuti klikon na ikonicu strelice iznad, ili sa F5
+12. Pokrenuti klikom na ikonicu strelice iznad, ili sa F5
 13. Ako se prikazu neki podaci u tabeli ispod, baza je backup-ovana
