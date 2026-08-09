@@ -17,6 +17,8 @@ public class Route {
     @ElementCollection
     private List<Address> addresses;
 
+    private Double distanceKm;
+
     public Route() {}
 
     public Route(Long id, List<Address> addresses) {
@@ -38,6 +40,14 @@ public class Route {
 
 	public void setAddresses(List<Address> addresses) {
 		this.addresses = addresses;
+	}
+
+	public Double getDistanceKm() {
+		return distanceKm;
+	}
+
+	public void setDistanceKm(Double distanceKm) {
+		this.distanceKm = distanceKm;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package com.example.mobile_applications_project_2025;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -26,9 +27,14 @@ import com.example.mobile_applications_project_2025.Model.Ride;
 import com.example.mobile_applications_project_2025.Model.Enumerator.RideStatus;
 import com.example.mobile_applications_project_2025.Network.ApiClient;
 import com.example.mobile_applications_project_2025.Network.APIs.RideAPI;
+import com.google.android.material.textfield.TextInputEditText;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,6 +44,7 @@ public class DriverRideHistoryFragment extends Fragment {
 
     private static final int PAGE_SIZE = 8;
 
+    private TextInputEditText etFromDate, etToDate;
     private CheckBox cbScheduled, cbStarted, cbFinished, cbCanceled;
     private Button btnApply;
     private RecyclerView rvRides;
@@ -50,6 +57,9 @@ public class DriverRideHistoryFragment extends Fragment {
     private int totalPages = 1;
 
     private RideAPI rideAPI;
+
+    private final SimpleDateFormat uiFmt = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+    private final SimpleDateFormat isoDateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
 
     public DriverRideHistoryFragment() {}
 
@@ -67,6 +77,9 @@ public class DriverRideHistoryFragment extends Fragment {
         cbFinished = view.findViewById(R.id.cbFinished);
         cbCanceled = view.findViewById(R.id.cbCanceled);
 
+        etFromDate = view.findViewById(R.id.etFromDate);
+        etToDate = view.findViewById(R.id.etToDate);
+
         btnApply = view.findViewById(R.id.btnApplyStatusFilter);
 
         rvRides = view.findViewById(R.id.rvRides);
@@ -82,6 +95,9 @@ public class DriverRideHistoryFragment extends Fragment {
 
         // default selection
         cbScheduled.setChecked(true);
+
+        etFromDate.setOnClickListener(v -> showDatePicker(etFromDate));
+        etToDate.setOnClickListener(v -> showDatePicker(etToDate));
 
         btnApply.setOnClickListener(v -> {
             currentPage = 0;
@@ -123,7 +139,10 @@ public class DriverRideHistoryFragment extends Fragment {
             return;
         }
 
-        rideAPI.getDriverRidesPaged(driverId, statuses, currentPage, PAGE_SIZE)
+        String fromIso = toIsoStartOrNull(etFromDate);
+        String toIso = toIsoEndOrNull(etToDate);
+
+        rideAPI.getDriverRidesPaged(driverId, statuses, fromIso, toIso, currentPage, PAGE_SIZE)
                 .enqueue(new Callback<PageResponseDTO<Ride>>() {
                     @Override
                     public void onResponse(@NonNull Call<PageResponseDTO<Ride>> call,
@@ -158,6 +177,52 @@ public class DriverRideHistoryFragment extends Fragment {
         tvPageInfo.setText((currentPage + 1) + " / " + totalPages);
         btnPrev.setEnabled(currentPage > 0);
         btnNext.setEnabled(currentPage < totalPages - 1);
+    }
+
+    private void showDatePicker(TextInputEditText target) {
+        Calendar c = Calendar.getInstance();
+        int y = c.get(Calendar.YEAR);
+        int m = c.get(Calendar.MONTH);
+        int d = c.get(Calendar.DAY_OF_MONTH);
+
+        new DatePickerDialog(requireContext(), (dp, year, month, dayOfMonth) -> {
+            String dd = String.format(Locale.getDefault(), "%02d.%02d.%04d", dayOfMonth, (month + 1), year);
+            target.setText(dd);
+        }, y, m, d).show();
+    }
+
+    private String toIsoStartOrNull(TextInputEditText et) {
+        String s = et.getText() != null ? et.getText().toString().trim() : "";
+        if (s.isEmpty()) return null;
+        try {
+            java.util.Date d = uiFmt.parse(s);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(d);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            return isoDateTime.format(cal.getTime());
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+
+    private String toIsoEndOrNull(TextInputEditText et) {
+        String s = et.getText() != null ? et.getText().toString().trim() : "";
+        if (s.isEmpty()) return null;
+        try {
+            java.util.Date d = uiFmt.parse(s);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(d);
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.MILLISECOND, 0);
+            return isoDateTime.format(cal.getTime());
+        } catch (ParseException e) {
+            return null;
+        }
     }
 
     private List<String> getSelectedStatuses() {

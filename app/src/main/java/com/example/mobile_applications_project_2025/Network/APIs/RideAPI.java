@@ -27,6 +27,8 @@ public interface RideAPI {
     Call<PageResponseDTO<Ride>> getDriverRidesPaged(
             @Path("driverId") Long driverId,
             @Query("statuses") List<String> statuses,
+            @Query("from") String fromIso,
+            @Query("to") String toIso,
             @Query("page") int page,
             @Query("size") int size
     );
