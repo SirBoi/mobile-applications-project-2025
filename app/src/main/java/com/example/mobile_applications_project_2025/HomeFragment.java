@@ -293,7 +293,7 @@ public class HomeFragment extends Fragment {
 
     private void loadDriverOngoingOrNextScheduledAndSetButton(Long driverId) {
         // First try Started (ongoing)
-        rideAPI.getDriverRidesPaged(driverId, Arrays.asList(RideStatus.Started.name()), 0, 1)
+        rideAPI.getDriverRidesPaged(driverId, Arrays.asList(RideStatus.Started.name()), null, null, 0, 1)
                 .enqueue(new Callback<PageResponseDTO<Ride>>() {
                     @Override
                     public void onResponse(@NonNull Call<PageResponseDTO<Ride>> call,
@@ -339,7 +339,7 @@ public class HomeFragment extends Fragment {
         // BUT you asked for next scheduled; assuming your backend returns the correct "closest upcoming"
         // OR you have only one scheduled ride active at a time.
         // If not, we can change backend sort to ASC for Scheduled specifically later.
-        rideAPI.getDriverRidesPaged(driverId, Arrays.asList(RideStatus.Scheduled.name()), 0, 1)
+        rideAPI.getDriverRidesPaged(driverId, Arrays.asList(RideStatus.Scheduled.name()), null, null, 0, 1)
                 .enqueue(new Callback<PageResponseDTO<Ride>>() {
                     @Override
                     public void onResponse(@NonNull Call<PageResponseDTO<Ride>> call,

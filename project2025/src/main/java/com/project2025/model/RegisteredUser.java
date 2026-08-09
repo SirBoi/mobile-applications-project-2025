@@ -75,7 +75,7 @@ public class RegisteredUser {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="status")
-	private UserStatus status = UserStatus.Inactive;
+	private UserStatus status = UserStatus.Free;
 	
 	public RegisteredUser() {
 		
@@ -96,7 +96,7 @@ public class RegisteredUser {
 		this.dailyActiveMinutes = 0;
 		this.isBlocked = false;
 		this.blockMessage = "";
-		this.status = UserStatus.Inactive;
+		this.status = UserStatus.Free;
 	}
 
 	public Long getId() {
