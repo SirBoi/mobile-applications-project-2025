@@ -55,4 +55,10 @@ dependencies {
 
     implementation libs.lifecycle.process
     implementation libs.mpandroidchart
+
+    // OpenStreetMap (osmdroid)
+    implementation 'org.osmdroid:osmdroid-android:6.1.18'
+
+    // Podrska za preference (potrebna za osmdroid konfiguraciju)
+    implementation 'androidx.preference:preference:1.2.1'
 }

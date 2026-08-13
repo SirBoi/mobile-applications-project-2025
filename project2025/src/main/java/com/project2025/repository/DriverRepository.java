@@ -13,4 +13,8 @@ import com.project2025.model.Driver;
 public interface DriverRepository extends JpaRepository<Driver, Long> {
 
     List<Driver> findByTypeAndCarStatusAndIsProfileActivatedTrue(CarType type, CarStatus carStatus);
+
+    // Drivers that have completed activation and are considered "active" /
+    // shown on the public map (2.1.1), regardless of busy/free (carStatus).
+    List<Driver> findByIsProfileActivatedTrue();
 }

@@ -27,13 +27,35 @@ public class WsPassengerReminders {
 
         stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, wsUrl);
 
+        // Slušamo događaje konekcije
         lifecycleSub = stompClient.lifecycle().subscribe(ev -> {
-            if (ev.getType() == LifecycleEvent.Type.ERROR) {
-                Log.e(TAG, "WS error", ev.getException());
+            switch (ev.getType()) {
+                case OPENED:
+                    Log.d(TAG, "WS konekcija otvorena. Pretplata na topik...");
+                    // TEK KAD JE KONEKCIJA OTVORENA, PRETPLAĆUJEMO SE NA TOPIK
+                    subscribeToTopic(passengerId, listener);
+                    break;
+
+                case ERROR:
+                    Log.e(TAG, "WS error", ev.getException());
+                    break;
+
+                case CLOSED:
+                    Log.d(TAG, "WS konekcija zatvorena");
+                    break;
             }
         });
 
         stompClient.connect();
+    }
+
+    private void subscribeToTopic(long passengerId, Listener listener) {
+        if (stompClient == null || !stompClient.isConnected()) return;
+
+        // Očisti prethodnu pretplatu ako postoji
+        if (topicSub != null && !topicSub.isDisposed()) {
+            topicSub.dispose();
+        }
 
         String topic = "/topic/passenger/" + passengerId;
         topicSub = stompClient.topic(topic).subscribe(msg -> {
@@ -56,7 +78,7 @@ public class WsPassengerReminders {
     public void disconnect() {
         try { if (topicSub != null && !topicSub.isDisposed()) topicSub.dispose(); } catch (Exception ignored) {}
         try { if (lifecycleSub != null && !lifecycleSub.isDisposed()) lifecycleSub.dispose(); } catch (Exception ignored) {}
-        try { if (stompClient != null) stompClient.disconnect(); } catch (Exception ignored) {}
+        try { if (stompClient != null && stompClient.isConnected()) stompClient.disconnect(); } catch (Exception ignored) {}
         topicSub = null;
         lifecycleSub = null;
         stompClient = null;
