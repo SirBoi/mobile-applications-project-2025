@@ -25,6 +25,7 @@ import com.example.mobile_applications_project_2025.Model.Ride;
 import com.example.mobile_applications_project_2025.Network.APIs.RideAPI;
 import com.example.mobile_applications_project_2025.Network.ApiClient;
 import com.example.mobile_applications_project_2025.Network.BaseUrl;
+import com.example.mobile_applications_project_2025.Network.NotificationPoller;
 import com.example.mobile_applications_project_2025.Network.UserActivityTracker;
 import com.example.mobile_applications_project_2025.Network.WsPassengerReminders;
 import com.example.mobile_applications_project_2025.Network.WsRideNotifications;
@@ -104,6 +105,7 @@ public class HomeFragment extends Fragment {
         if (btnOdjava != null) {
             btnOdjava.setOnClickListener(v -> {
                 UserActivityTracker.getInstance().stop();
+                NotificationPoller.getInstance(requireContext()).stop();
                 SessionManager.clear();
 
                 NavController navController = NavHostFragment.findNavController(this);

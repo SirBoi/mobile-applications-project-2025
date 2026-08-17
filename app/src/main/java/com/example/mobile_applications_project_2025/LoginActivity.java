@@ -20,12 +20,12 @@ import com.example.mobile_applications_project_2025.Model.Passenger;
 import com.example.mobile_applications_project_2025.Model.RegisteredUser;
 import com.example.mobile_applications_project_2025.Network.API;
 import com.example.mobile_applications_project_2025.Network.APIs.RegisteredUserAPI;
+import com.example.mobile_applications_project_2025.Network.NotificationPoller;
 import com.example.mobile_applications_project_2025.Network.UserActivityTracker;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.example.mobile_applications_project_2025.Network.UserActivityTracker;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -109,6 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                         /*
                         if (SessionManager.getRole() == Role.Driver) {
                             UserActivityTracker.getInstance().start();
+                            NotificationPoller.getInstance(getApplicationContext()).start();
                         }
                         */
 

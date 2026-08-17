@@ -31,17 +31,20 @@ public class RideService {
     private final RouteRepository routeRepository;
     private final DriverRepository driverRepository;
     private final RegisteredUserRepository registeredUserRepository;
+    private final RidePassengerNotificationService passengerNotificationService;
 
     public RideService(
             RideRepository repository,
             RouteRepository routeRepository,
             DriverRepository driverRepository,
-            RegisteredUserRepository registeredUserRepository
+            RegisteredUserRepository registeredUserRepository,
+            RidePassengerNotificationService passengerNotificationService
     ) {
         this.repository = repository;
         this.routeRepository = routeRepository;
         this.driverRepository = driverRepository;
         this.registeredUserRepository = registeredUserRepository;
+        this.passengerNotificationService = passengerNotificationService;
     }
 
     @Transactional
@@ -163,6 +166,9 @@ public class RideService {
 
         chosenDriver.setCarStatus(CarStatus.Unavailable);
         driverRepository.save(chosenDriver);
+
+        // 2.4.2 - obavesti ulinkovane putnike (mejl + in-app notifikacija)
+        passengerNotificationService.notifyRideAccepted(saved);
 
         return Optional.of(saved);
     }

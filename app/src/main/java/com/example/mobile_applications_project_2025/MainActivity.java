@@ -1,10 +1,15 @@
 package com.example.mobile_applications_project_2025;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -15,6 +20,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.mobile_applications_project_2025.Model.Enumerator.Role;
 import com.example.mobile_applications_project_2025.Model.RegisteredUser;
+import com.example.mobile_applications_project_2025.Network.NotificationPoller;
 import com.example.mobile_applications_project_2025.Network.UserActivityTracker;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -32,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        requestNotificationPermissionIfNeeded();
 
         bottomNav = findViewById(R.id.bottomNav);
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
@@ -148,11 +156,23 @@ public class MainActivity extends AppCompatActivity {
         if (u == null || u.getId() == null) return;
 
         UserActivityTracker.getInstance().start();
+        NotificationPoller.getInstance(this).start();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         UserActivityTracker.getInstance().stop();
+        NotificationPoller.getInstance(this).stop();
+    }
+
+    private void requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1001);
+            }
+        }
     }
 }

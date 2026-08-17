@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.preference.PreferenceManager;
 
+import com.example.mobile_applications_project_2025.Network.NotificationPoller;
 import com.example.mobile_applications_project_2025.Network.UserActivityTracker;
 
 import org.osmdroid.config.Configuration;
@@ -26,16 +27,18 @@ public class MyApp extends Application {
         ProcessLifecycleOwner.get().getLifecycle().addObserver(new AppLifecycleObserver());
     }
 
-    static class AppLifecycleObserver implements androidx.lifecycle.LifecycleObserver {
+    class AppLifecycleObserver implements androidx.lifecycle.LifecycleObserver {
 
         @androidx.lifecycle.OnLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_START)
         public void onEnterForeground() {
             UserActivityTracker.getInstance().start();
+            NotificationPoller.getInstance(MyApp.this).start();
         }
 
         @androidx.lifecycle.OnLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_STOP)
         public void onEnterBackground() {
             UserActivityTracker.getInstance().stop();
+            NotificationPoller.getInstance(MyApp.this).stop();
         }
     }
 }
