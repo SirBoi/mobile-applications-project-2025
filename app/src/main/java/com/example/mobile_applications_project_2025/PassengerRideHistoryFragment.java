@@ -27,6 +27,7 @@ import com.example.mobile_applications_project_2025.Model.Ride;
 import com.example.mobile_applications_project_2025.Model.Route;
 import com.example.mobile_applications_project_2025.Model.Enumerator.RideStatus;
 import com.example.mobile_applications_project_2025.Network.ApiClient;
+import com.example.mobile_applications_project_2025.Network.APIs.DriverRatingAPI;
 import com.example.mobile_applications_project_2025.Network.APIs.RideAPI;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -56,6 +57,7 @@ public class PassengerRideHistoryFragment extends Fragment {
 
     private DriverRideCardAdapter adapter;
     private RideAPI rideAPI;
+    private DriverRatingAPI driverRatingAPI;
 
     private int currentPage = 0; // 0-based
     private int totalPages = 1;
@@ -89,6 +91,7 @@ public class PassengerRideHistoryFragment extends Fragment {
         tvPageInfo = view.findViewById(R.id.tvPageInfo);
 
         rideAPI = ApiClient.getRetrofit().create(RideAPI.class);
+        driverRatingAPI = ApiClient.getRetrofit().create(DriverRatingAPI.class);
 
         adapter = new DriverRideCardAdapter(this::openRideDetailsPopup);
         rvRides.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -243,7 +246,7 @@ public class PassengerRideHistoryFragment extends Fragment {
     }
 
     private void openRideDetailsPopup(Ride ride) {
-        com.example.mobile_applications_project_2025.UI.RideDetailsDialogs.showPassengerRideDetails(requireContext(), rideAPI, ride, this::fetchPage);
+        com.example.mobile_applications_project_2025.UI.RideDetailsDialogs.showPassengerRideDetails(requireContext(), rideAPI, driverRatingAPI, ride, this::fetchPage);
     }
 
     private boolean isRideFavoriteForLoggedPassenger(Ride ride) {
