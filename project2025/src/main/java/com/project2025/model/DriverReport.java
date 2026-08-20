@@ -23,6 +23,12 @@ public class DriverReport {
 	@JoinColumn(name = "passenger_id", nullable = false)
 	private Passenger passenger;
 	
+	// 2.6.2 - na koju konkretnu vožnju se prijava nekonzistentnosti odnosi
+	// (bitno za prikaz u istoriji vožnji, 2.9.x).
+	@ManyToOne
+	@JoinColumn(name = "ride_id")
+	private Ride ride;
+	
 	@Column(name="text")
 	private String text;
 	
@@ -34,6 +40,14 @@ public class DriverReport {
 		super();
 		this.driver = driver;
 		this.passenger = passenger;
+		this.text = text;
+	}
+	
+	public DriverReport(Driver driver, Passenger passenger, Ride ride, String text) {
+		super();
+		this.driver = driver;
+		this.passenger = passenger;
+		this.ride = ride;
 		this.text = text;
 	}
 
@@ -69,8 +83,17 @@ public class DriverReport {
 		this.text = text;
 	}
 
+	public Ride getRide() {
+		return ride;
+	}
+
+	public void setRide(Ride ride) {
+		this.ride = ride;
+	}
+
 	@Override
 	public String toString() {
-		return "DriverReport [id=" + id + ", driver=" + driver + ", passenger=" + passenger + ", text=" + text + "]";
+		return "DriverReport [id=" + id + ", driver=" + driver + ", passenger=" + passenger + ", ride="
+				+ (ride != null ? ride.getId() : null) + ", text=" + text + "]";
 	}
 }

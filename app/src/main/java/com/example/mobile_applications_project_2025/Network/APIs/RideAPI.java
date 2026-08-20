@@ -67,4 +67,7 @@ public interface RideAPI {
 
     @GET("api/rides/driver/{driverId}/next")
     Call<Ride> getDriverNextScheduledRide(@Path("driverId") Long driverId);
+
+    @GET("api/rides/{id}")
+    Call<Ride> getRide(@Path("id") Long id);
 }

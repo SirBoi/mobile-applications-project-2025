@@ -204,63 +204,47 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadPassengerOngoingRideAndSetButton(Long passengerId) {
-        List<String> statuses = new ArrayList<>();
-        statuses.add(RideStatus.Started.name());
+        // 2.6.2 - koristimo /current jer ono pokriva i vožnje koje je putnik
+        // sam poručio i one na koje je samo ulinkovan (getPassengerRidesPaged
+        // gleda samo vožnje čiji je kreator, pa ulinkovani putnici ne bi
+        // videli dugme za praćenje vožnje).
+        rideAPI.getPassengerCurrentRide(passengerId).enqueue(new Callback<Ride>() {
+            @Override
+            public void onResponse(@NonNull Call<Ride> call, @NonNull Response<Ride> response) {
+                if (!isAdded()) return;
 
-        rideAPI.getPassengerRidesPaged(
-                        passengerId,
-                        statuses,
-                        null,
-                        null,
-                        false,
-                        0,
-                        1
-                )
-                .enqueue(new Callback<PageResponseDTO<Ride>>() {
-                    @Override
-                    public void onResponse(@NonNull Call<PageResponseDTO<Ride>> call,
-                                           @NonNull Response<PageResponseDTO<Ride>> response) {
-                        if (!isAdded()) return;
-
-                        if (!response.isSuccessful() || response.body() == null) {
-                            if (fabOngoingRide != null) {
-                                fabOngoingRide.setVisibility(View.GONE);
-                                fabOngoingRide.setOnClickListener(null);
-                            }
-                            return;
-                        }
-
-                        PageResponseDTO<Ride> page = response.body();
-                        Ride ongoing = (page.content != null && !page.content.isEmpty()) ? page.content.get(0) : null;
-
-                        if (ongoing == null) {
-                            if (fabOngoingRide != null) {
-                                fabOngoingRide.setVisibility(View.GONE);
-                                fabOngoingRide.setOnClickListener(null);
-                            }
-                            return;
-                        }
-
-                        cachedPassengerOngoing = ongoing;
-                        if (fabOngoingRide != null) {
-                            fabOngoingRide.setVisibility(View.VISIBLE);
-                            fabOngoingRide.setText("View ongoing ride");
-
-                            fabOngoingRide.setOnClickListener(v -> {
-                                openPassengerRideDetailsPopup(ongoing);
-                            });
-                        }
+                if (!response.isSuccessful() || response.body() == null) {
+                    if (fabOngoingRide != null) {
+                        fabOngoingRide.setVisibility(View.GONE);
+                        fabOngoingRide.setOnClickListener(null);
                     }
+                    return;
+                }
 
-                    @Override
-                    public void onFailure(@NonNull Call<PageResponseDTO<Ride>> call, @NonNull Throwable t) {
-                        if (!isAdded()) return;
-                        if (fabOngoingRide != null) {
-                            fabOngoingRide.setVisibility(View.GONE);
-                            fabOngoingRide.setOnClickListener(null);
-                        }
-                    }
-                });
+                Ride ongoing = response.body();
+                cachedPassengerOngoing = ongoing;
+                if (fabOngoingRide != null) {
+                    fabOngoingRide.setVisibility(View.VISIBLE);
+                    fabOngoingRide.setText("Track ongoing ride");
+
+                    fabOngoingRide.setOnClickListener(v -> {
+                        Bundle args = new Bundle();
+                        args.putLong("rideId", ongoing.getId());
+                        NavHostFragment.findNavController(HomeFragment.this)
+                                .navigate(R.id.passengerRideOverviewFragment, args);
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Ride> call, @NonNull Throwable t) {
+                if (!isAdded()) return;
+                if (fabOngoingRide != null) {
+                    fabOngoingRide.setVisibility(View.GONE);
+                    fabOngoingRide.setOnClickListener(null);
+                }
+            }
+        });
     }
 
     private void openPassengerRideDetailsPopup(Ride ride) {
@@ -443,6 +427,10 @@ public class HomeFragment extends Fragment {
                     }
                     Toast.makeText(requireContext(), "Ride started.", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
+                    Bundle navArgs = new Bundle();
+                    navArgs.putLong("rideId", ride.id);
+                    NavHostFragment.findNavController(HomeFragment.this)
+                            .navigate(R.id.driverRideOverviewFragment, navArgs);
                     refreshHomeButtons();
                 }
 
@@ -544,6 +532,10 @@ public class HomeFragment extends Fragment {
 
                     Toast.makeText(requireContext(), "Ride started.", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
+                    Bundle navArgs = new Bundle();
+                    navArgs.putLong("rideId", ride.id);
+                    NavHostFragment.findNavController(HomeFragment.this)
+                            .navigate(R.id.driverRideOverviewFragment, navArgs);
                     refreshHomeButtons();
                 }
 
