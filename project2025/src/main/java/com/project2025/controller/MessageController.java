@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.project2025.dto.MessageResponse;
+import com.project2025.dto.MessageSendRequest;
 import com.project2025.model.Message;
 import com.project2025.service.MessageService;
 
@@ -45,5 +47,13 @@ public class MessageController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         return service.delete(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
+
+    // 2.11 - slanje poruke u live support chat (koristi i korisnik/vozac i admin).
+    @PostMapping("/send")
+    public ResponseEntity<MessageResponse> send(@RequestBody MessageSendRequest request) {
+        return service.sendMessage(request)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 }

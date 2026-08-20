@@ -16,11 +16,35 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.mobile_applications_project_2025.DTO.MessageResponseDTO;
+import com.example.mobile_applications_project_2025.DTO.MessageSendRequestDTO;
+import com.example.mobile_applications_project_2025.Network.APIs.ChatAPI;
+import com.example.mobile_applications_project_2025.Network.ApiClient;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+// 2.11 - Live podrska. Ako se otvori bez argumenata, prikazuje "moj" chat sa
+// supportom (za putnika/vozaca). Admin ga otvara sa "userId" (cim chata pripada
+// tom korisniku) preko AdminChatListFragment - u tom slucaju admin odgovara
+// kao posiljalac, ali gleda isti chat kao svi ostali admini.
 public class ChatFragment extends Fragment {
+
+    private static final String ARG_USER_ID = "chat_user_id";
+
+    public static ChatFragment forUser(Long userId) {
+        ChatFragment f = new ChatFragment();
+        Bundle args = new Bundle();
+        args.putLong(ARG_USER_ID, userId);
+        f.setArguments(args);
+        return f;
+    }
 
     private LinearLayout messagesContainer;
     private ScrollView scrollView;
@@ -30,59 +54,101 @@ public class ChatFragment extends Fragment {
     private int white;
     private int black;
 
+    private ChatAPI chatAPI;
+    private Long chatUserId; // ciji je ovo chat (vlasnik)
+    private Long myUserId;   // ko je ulogovan (posiljalac kad se salje poruka)
+
     @Nullable
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState
-    ) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_chat, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
         messagesContainer = view.findViewById(R.id.messagesContainer);
         scrollView = view.findViewById(R.id.scrollMessages);
         etMessage = view.findViewById(R.id.etMessage);
-
         MaterialButton btnSend = view.findViewById(R.id.btnSend);
-//        MaterialButton btnList = view.findViewById(R.id.btnList);
 
-        // colors
         orangeAction = requireContext().getColor(R.color.orange_action);
         white = requireContext().getColor(R.color.white);
         black = requireContext().getColor(R.color.black);
-
-        // Optional: style buttons explicitly
         btnSend.setBackgroundColor(orangeAction);
         btnSend.setTextColor(white);
 
-//        btnList.setBackgroundColor(orangeAction);
-//        btnList.setTextColor(white);
+        chatAPI = ApiClient.getRetrofit().create(ChatAPI.class);
 
-        // Hardcoded initial messages (UI mock)
-        addReceivedMessage("Zdravo! Dobrodošli u podršku.");
-        addSentMessage("Zdravo, imam pitanje u vezi vožnje.");
-        addReceivedMessage("Naravno, recite u čemu je problem.");
+        if (!SessionManager.isLoggedIn() || SessionManager.getUser() == null) {
+            Toast.makeText(requireContext(), "You must be logged in.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        myUserId = SessionManager.getUser().getId();
+        chatUserId = (getArguments() != null && getArguments().containsKey(ARG_USER_ID))
+                ? getArguments().getLong(ARG_USER_ID) : myUserId;
+
+        loadMessages();
 
         btnSend.setOnClickListener(v -> {
             String text = etMessage.getText() == null ? "" : etMessage.getText().toString().trim();
             if (text.isEmpty()) return;
-
-            addSentMessage(text);
-            etMessage.setText("");
+            sendMessage(text);
         });
+    }
 
-//        btnList.setOnClickListener(v ->
-//                Toast.makeText(requireContext(), "List clicked", Toast.LENGTH_SHORT).show()
-//        );
+    private void loadMessages() {
+        chatAPI.getMessages(chatUserId).enqueue(new Callback<List<MessageResponseDTO>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<MessageResponseDTO>> call, @NonNull Response<List<MessageResponseDTO>> response) {
+                if (!isAdded()) return;
+                if (!response.isSuccessful() || response.body() == null) {
+                    Toast.makeText(requireContext(), "Could not load chat.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                messagesContainer.removeAllViews();
+                for (MessageResponseDTO m : response.body()) {
+                    addBubble(m.text, m.senderId != null && m.senderId.equals(myUserId));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<MessageResponseDTO>> call, @NonNull Throwable t) {
+                if (!isAdded()) return;
+                Toast.makeText(requireContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void sendMessage(String text) {
+        MessageSendRequestDTO body = new MessageSendRequestDTO(chatUserId, myUserId, text);
+        chatAPI.sendMessage(body).enqueue(new Callback<MessageResponseDTO>() {
+            @Override
+            public void onResponse(@NonNull Call<MessageResponseDTO> call, @NonNull Response<MessageResponseDTO> response) {
+                if (!isAdded()) return;
+                if (!response.isSuccessful() || response.body() == null) {
+                    Toast.makeText(requireContext(), "Failed to send message.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                addBubble(response.body().text, true);
+                etMessage.setText("");
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<MessageResponseDTO> call, @NonNull Throwable t) {
+                if (!isAdded()) return;
+                Toast.makeText(requireContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /* =========================
        Message UI helpers
        ========================= */
+
+    private void addBubble(String text, boolean sentByMe) {
+        if (sentByMe) addSentMessage(text); else addReceivedMessage(text);
+    }
 
     private void addSentMessage(String text) {
         Context ctx = requireContext();
