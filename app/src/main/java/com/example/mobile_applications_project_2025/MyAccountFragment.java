@@ -95,6 +95,9 @@ public class MyAccountFragment extends Fragment {
         btnChangePassword.setOnClickListener(v ->
                 NavHostFragment.findNavController(this).navigate(R.id.changePasswordFragment)
         );
+        btnUpdatePricing.setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigate(R.id.adminPriceUpdateFragment)
+        );
 
         if (user.role == Role.Admin) {
             btnViewActiveRides.setVisibility(View.GONE);

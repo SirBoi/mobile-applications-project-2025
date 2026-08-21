@@ -91,7 +91,11 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             } else if (id == R.id.statsFragment) {
-                navController.navigate(R.id.statsFragment);
+                if (role == Role.Admin) {
+                    navController.navigate(R.id.adminRideOverviewFragment);
+                } else {
+                    navController.navigate(R.id.statsFragment);
+                }
                 return true;
             }
 

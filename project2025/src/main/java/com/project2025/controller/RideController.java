@@ -174,4 +174,15 @@ public class RideController {
                 .map(ride -> ResponseEntity.ok(RideResponse.from(ride)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    // 2.13 - Admin: pregled vožnji koje trenutno traju, pretraga po imenu vozača.
+    @GetMapping("/ongoing")
+    public ResponseEntity<List<com.project2025.dto.OngoingRideResponse>> getOngoing(
+            @RequestParam(required = false) String driverName
+    ) {
+        List<com.project2025.dto.OngoingRideResponse> result = service.findOngoingByDriverName(driverName).stream()
+                .map(com.project2025.dto.OngoingRideResponse::from)
+                .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(result);
+    }
 }

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -302,5 +303,27 @@ public class RideService {
 
         registeredUserRepository.save(passenger);
         return true;
+    }
+
+    // 2.13 - admin pretraga vožnji koje trenutno traju (status = Started),
+    // po (delu) imena ili prezimena vozača. Prazna/nedostajuća pretraga vraća sve.
+    @Transactional(readOnly = true)
+    public List<Ride> findOngoingByDriverName(String driverName) {
+        List<Ride> started = repository.findByStatus(RideStatus.Started);
+        if (driverName == null || driverName.trim().isEmpty()) {
+            return started;
+        }
+        String needle = driverName.trim().toLowerCase();
+        return started.stream()
+                .filter(r -> r.getDriver() != null && (
+                        containsIgnoreCase(r.getDriver().getFirstName(), needle)
+                        || containsIgnoreCase(r.getDriver().getLastName(), needle)
+                        || containsIgnoreCase(r.getDriver().getFirstName() + " " + r.getDriver().getLastName(), needle)
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private boolean containsIgnoreCase(String haystack, String needleLower) {
+        return haystack != null && haystack.toLowerCase().contains(needleLower);
     }
 }
