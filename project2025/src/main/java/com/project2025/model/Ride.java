@@ -3,6 +3,7 @@ package com.project2025.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project2025.enums.RideStatus;
 
 import jakarta.persistence.Column;
@@ -194,6 +195,7 @@ public class Ride {
 		this.hasStarted = hasStarted;
 	}
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	public LocalDateTime getRideStartDatetime() {
 		return rideStartDatetime;
 	}
@@ -202,6 +204,7 @@ public class Ride {
 		this.rideStartDatetime = rideStartDatetime;
 	}
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	public LocalDateTime getRideFinishDatetime() {
 		return rideFinishDatetime;
 	}

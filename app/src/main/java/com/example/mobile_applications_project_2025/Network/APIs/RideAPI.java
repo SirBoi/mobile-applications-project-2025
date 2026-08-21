@@ -1,6 +1,7 @@
 package com.example.mobile_applications_project_2025.Network.APIs;
 
 import com.example.mobile_applications_project_2025.DTO.PageResponseDTO;
+import com.example.mobile_applications_project_2025.DTO.OngoingRideResponseDTO;
 import com.example.mobile_applications_project_2025.DTO.RideCreateWithCriteriaRequestDTO;
 import com.example.mobile_applications_project_2025.Model.Ride;
 
@@ -17,6 +18,10 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface RideAPI {
+    // 2.13 - Admin: voznje koje trenutno traju (Started), opciona pretraga po vozacu.
+    @GET("api/rides/ongoing")
+    Call<List<OngoingRideResponseDTO>> getOngoingRides(@Query("driverName") String driverName);
+
     @GET("api/config")
     Call<ResponseBody> getConfig();
 
@@ -67,4 +72,7 @@ public interface RideAPI {
 
     @GET("api/rides/driver/{driverId}/next")
     Call<Ride> getDriverNextScheduledRide(@Path("driverId") Long driverId);
+
+    @GET("api/rides/{id}")
+    Call<Ride> getRide(@Path("id") Long id);
 }

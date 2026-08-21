@@ -6,103 +6,152 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.mobile_applications_project_2025.DTO.OngoingRideResponseDTO;
+import com.example.mobile_applications_project_2025.Model.Address;
+import com.example.mobile_applications_project_2025.Network.APIs.RideAPI;
+import com.example.mobile_applications_project_2025.Network.ApiClient;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+// 2.13 - Admin: pregled voznji koje trenutno traju, pretraga po imenu vozaca.
 public class AdminRideOverviewFragment extends Fragment {
 
     private LinearLayout cardsContainer;
-    private int orange;
-    private int white;
-    private int black;
+    private TextInputEditText etSearch;
+    private RideAPI rideAPI;
+    private int orange, white, black;
 
     @Nullable
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState
-    ) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_admin_ride_overview, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
         cardsContainer = view.findViewById(R.id.cardsContainer);
-        TextInputEditText etSearch = view.findViewById(R.id.etSearch);
+        etSearch = view.findViewById(R.id.etSearch);
         MaterialButton btnSearch = view.findViewById(R.id.btnSearch);
 
         orange = requireContext().getColor(R.color.orange_action);
         white = requireContext().getColor(R.color.white);
         black = requireContext().getColor(R.color.black);
 
-        // Hardcoded cards (UI mock)
-        addRideCard("Marko Marković", "10:21", "10:48");
-        addRideCard("Ivana Ivanović", "11:05", "11:37");
-        addRideCard("Petar Petrović", "12:10", "12:44");
+        rideAPI = ApiClient.getRetrofit().create(RideAPI.class);
 
-        btnSearch.setOnClickListener(v -> {
-            String q = etSearch.getText() == null ? "" : etSearch.getText().toString();
-            Toast.makeText(requireContext(),
-                    "Search clicked: " + q,
-                    Toast.LENGTH_SHORT).show();
+        search(null);
+        btnSearch.setOnClickListener(v -> search(etSearch.getText() == null ? "" : etSearch.getText().toString().trim()));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (rideAPI != null) search(etSearch.getText() == null ? null : etSearch.getText().toString().trim());
+    }
+
+    private void search(String driverName) {
+        rideAPI.getOngoingRides(driverName).enqueue(new Callback<List<OngoingRideResponseDTO>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<OngoingRideResponseDTO>> call, @NonNull Response<List<OngoingRideResponseDTO>> response) {
+                if (!isAdded()) return;
+                if (!response.isSuccessful() || response.body() == null) {
+                    Toast.makeText(requireContext(), "Could not load ongoing rides.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                render(response.body());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<OngoingRideResponseDTO>> call, @NonNull Throwable t) {
+                if (!isAdded()) return;
+                Toast.makeText(requireContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
-    /* =========================
-       Card helper
-       ========================= */
+    private void render(List<OngoingRideResponseDTO> rides) {
+        cardsContainer.removeAllViews();
+        if (rides.isEmpty()) {
+            TextView empty = new TextView(requireContext());
+            empty.setText("No rides currently in progress.");
+            cardsContainer.addView(empty);
+            return;
+        }
+        for (OngoingRideResponseDTO r : rides) addRideCard(r);
+    }
 
-    private void addRideCard(String driver, String dep, String arr) {
+    private void addRideCard(OngoingRideResponseDTO r) {
         Context ctx = requireContext();
 
         MaterialCardView card = new MaterialCardView(ctx);
         LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        );
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         cardLp.bottomMargin = dp(10);
         card.setLayoutParams(cardLp);
         card.setRadius(dp(18));
         card.setCardElevation(2f);
-        card.setCardBackgroundColor(white);
+        card.setCardBackgroundColor(Boolean.TRUE.equals(r.isPanicPressed)
+                ? android.graphics.Color.parseColor("#D32F2F") : white);
 
         LinearLayout content = new LinearLayout(ctx);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(14), dp(14), dp(14), dp(14));
 
-        TextView tvDriver = new TextView(ctx);
-        tvDriver.setText("Driver: " + driver);
-        tvDriver.setTextColor(black);
-        tvDriver.setTextSize(16);
-        tvDriver.setTypeface(null, android.graphics.Typeface.BOLD);
+        int textColor = Boolean.TRUE.equals(r.isPanicPressed) ? white : black;
 
-        TextView tvDep = new TextView(ctx);
-        tvDep.setText("Departure: " + dep);
-        tvDep.setTextColor(black);
-        tvDep.setPadding(0, dp(6), 0, 0);
-
-        TextView tvArr = new TextView(ctx);
-        tvArr.setText("Arrival: " + arr);
-        tvArr.setTextColor(black);
-        tvArr.setPadding(0, dp(4), 0, 0);
-
-        content.addView(tvDriver);
-        content.addView(tvDep);
-        content.addView(tvArr);
+        content.addView(line(ctx, "Driver: " + safe(r.driverName), textColor, true));
+        content.addView(line(ctx, "From: " + formatAddress(r.origin), textColor, false));
+        content.addView(line(ctx, "To: " + formatAddress(r.destination), textColor, false));
+        content.addView(line(ctx, "Departed: " + safe(r.rideStartDatetime), textColor, false));
+        content.addView(line(ctx, "ETA: " + safe(r.estimatedFinishDatetime), textColor, false));
+        content.addView(line(ctx, "Progress: " + (r.progressPercent == null ? 0 : r.progressPercent) + "%", textColor, false));
+        if (r.passengerNames != null && !r.passengerNames.isEmpty()) {
+            content.addView(line(ctx, "Passengers: " + String.join(", ", r.passengerNames), textColor, false));
+        }
+        if (Boolean.TRUE.equals(r.isPanicPressed)) {
+            content.addView(line(ctx, "⚠ PANIC pressed!", textColor, true));
+        }
 
         card.addView(content);
         cardsContainer.addView(card);
     }
+
+    private TextView line(Context ctx, String text, int color, boolean bold) {
+        TextView tv = new TextView(ctx);
+        tv.setText(text);
+        tv.setTextColor(color);
+        tv.setPadding(0, dp(4), 0, 0);
+        if (bold) {
+            tv.setTextSize(16);
+            tv.setTypeface(null, android.graphics.Typeface.BOLD);
+        }
+        return tv;
+    }
+
+    private String formatAddress(Address a) {
+        if (a == null) return "-";
+        String street = a.street != null ? a.street : "";
+        String number = a.number != null ? a.number : "";
+        String city = a.city != null ? a.city : "";
+        return (street + " " + number + ", " + city).trim();
+    }
+
+    private String safe(String s) { return s == null ? "-" : s; }
 
     private int dp(int v) {
         float d = requireContext().getResources().getDisplayMetrics().density;

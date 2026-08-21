@@ -15,5 +15,7 @@ public interface DriverRatingRepository extends JpaRepository<DriverRating, Long
 
     List<DriverRating> findByPassengerId(Long passengerId);
 
-    Optional<DriverRating> findByDriverIdAndPassengerId(Long driverId, Long passengerId);
+    Optional<DriverRating> findByRideId(Long rideId);
+
+    boolean existsByRideId(Long rideId);
 }

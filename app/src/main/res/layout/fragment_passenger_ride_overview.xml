@@ -45,14 +45,11 @@
             android:layout_width="match_parent"
             android:layout_height="420dp">
 
-            <!-- Mock map background -->
-            <ImageView
-                android:id="@+id/imgMap"
+            <!-- 2.6.2 - prava OSM mapa sa simuliranom pozicijom vozila -->
+            <org.osmdroid.views.MapView
+                android:id="@+id/mapView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/map_mock"
-                android:contentDescription="@string/app_name"/>
+                android:layout_height="match_parent" />
 
             <!-- ETA card overlay -->
             <com.google.android.material.card.MaterialCardView
@@ -85,7 +82,7 @@
                         android:id="@+id/tvEta"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="04:35"
+                        android:text="--:--"
                         android:textStyle="bold"
                         android:textSize="22sp"
                         android:paddingTop="4dp"/>
@@ -217,6 +214,7 @@
 
         <!-- FORM (scrollable area) -->
         <LinearLayout
+            android:id="@+id/reportSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"

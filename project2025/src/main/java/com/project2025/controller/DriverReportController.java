@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.project2025.dto.DriverReportCreateRequest;
 import com.project2025.model.DriverReport;
 import com.project2025.service.DriverReportService;
 
@@ -18,9 +19,17 @@ public class DriverReportController {
         this.service = service;
     }
 
-    @PostMapping
-    public ResponseEntity<DriverReport> create(@RequestBody DriverReport entity) {
-        return ResponseEntity.ok(service.create(entity));
+    // 2.6.2 - putnik iz mobilne app-e šalje prijavu preko rideId/driverId/passengerId.
+    @PostMapping("/create")
+    public ResponseEntity<DriverReport> createFromRequest(@RequestBody DriverReportCreateRequest request) {
+        return service.createFromRequest(request)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.badRequest().build());
+    }
+
+    @GetMapping("/ride/{rideId}")
+    public ResponseEntity<List<DriverReport>> getByRide(@PathVariable Long rideId) {
+        return ResponseEntity.ok(service.findByRide(rideId));
     }
 
     @PutMapping("/{id}")

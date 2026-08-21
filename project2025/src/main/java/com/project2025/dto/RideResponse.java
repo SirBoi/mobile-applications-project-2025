@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project2025.enums.RideStatus;
 import com.project2025.model.Address;
 import com.project2025.model.Driver;
@@ -66,7 +67,9 @@ public class RideResponse {
     public List<String> getPassengers() { return passengers; }
     public Driver getDriver() { return driver; }
     public Boolean getHasStarted() { return hasStarted; }
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     public LocalDateTime getRideStartDatetime() { return rideStartDatetime; }
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     public LocalDateTime getRideFinishDatetime() { return rideFinishDatetime; }
     public RideStatus getStatus() { return status; }
     public RegisteredUser getCancelledBy() { return cancelledBy; }

@@ -5,17 +5,23 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.mobile_applications_project_2025.DTO.DriverRatingCreateRequestDTO;
+import com.example.mobile_applications_project_2025.DTO.DriverRatingResponseDTO;
+import com.example.mobile_applications_project_2025.Model.Enumerator.RideStatus;
 import com.example.mobile_applications_project_2025.Model.Passenger;
 import com.example.mobile_applications_project_2025.Model.Ride;
 import com.example.mobile_applications_project_2025.Model.Route;
+import com.example.mobile_applications_project_2025.Network.APIs.DriverRatingAPI;
 import com.example.mobile_applications_project_2025.Network.APIs.RideAPI;
 import com.example.mobile_applications_project_2025.R;
 import com.example.mobile_applications_project_2025.SessionManager;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,6 +47,18 @@ public final class RideDetailsDialogs {
             @NonNull Ride ride,
             AfterAction after
     ) {
+        showPassengerRideDetails(ctx, rideAPI, null, ride, after);
+    }
+
+    // 2.8 - overload sa DriverRatingAPI: omogucava naknadno ocenjivanje zavrsene
+    // voznje direktno iz istorije (Ride History -> detalji voznje).
+    public static void showPassengerRideDetails(
+            @NonNull Context ctx,
+            @NonNull RideAPI rideAPI,
+            DriverRatingAPI driverRatingAPI,
+            @NonNull Ride ride,
+            AfterAction after
+    ) {
         View dialogView = LayoutInflater.from(ctx).inflate(R.layout.dialog_passenger_ride_details, null, false);
 
         TextView tvAll = dialogView.findViewById(R.id.tvRideAllData);
@@ -54,6 +72,8 @@ public final class RideDetailsDialogs {
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();
+
+        setupRatingSection(ctx, dialogView, driverRatingAPI, ride);
 
         btnToggleFavorite.setOnClickListener(v -> {
             if (!SessionManager.isLoggedIn() || SessionManager.getUser() == null) return;
@@ -134,6 +154,90 @@ public final class RideDetailsDialogs {
         });
 
         dialog.show();
+    }
+
+    // 2.8 - prikazuje sekciju za ocenjivanje samo za zavrsene voznje, i proverava
+    // da li vec postoji ocena za tu voznju (GET /api/driverratings/ride/{id}).
+    private static void setupRatingSection(Context ctx, View dialogView, DriverRatingAPI driverRatingAPI, Ride ride) {
+        View section = dialogView.findViewById(R.id.ratingSectionHistory);
+        if (section == null || driverRatingAPI == null) return;
+        if (ride.status != RideStatus.Finished || ride.id == null) return;
+
+        section.setVisibility(View.VISIBLE);
+
+        NumberPicker npDriver = dialogView.findViewById(R.id.npDriverHistory);
+        NumberPicker npVehicle = dialogView.findViewById(R.id.npVehicleHistory);
+        TextInputEditText etComment = dialogView.findViewById(R.id.etRatingCommentHistory);
+        Button btnSubmit = dialogView.findViewById(R.id.btnSubmitRatingHistory);
+
+        npDriver.setMinValue(1);
+        npDriver.setMaxValue(5);
+        npDriver.setValue(5);
+        npVehicle.setMinValue(1);
+        npVehicle.setMaxValue(5);
+        npVehicle.setValue(5);
+
+        Runnable markRated = () -> {
+            btnSubmit.setEnabled(false);
+            btnSubmit.setText("Already rated");
+            npDriver.setEnabled(false);
+            npVehicle.setEnabled(false);
+            etComment.setEnabled(false);
+        };
+
+        // proveri da li je vec ocenjeno
+        driverRatingAPI.getByRide(ride.id).enqueue(new Callback<DriverRatingResponseDTO>() {
+            @Override
+            public void onResponse(@NonNull Call<DriverRatingResponseDTO> call, @NonNull Response<DriverRatingResponseDTO> response) {
+                if (response.isSuccessful() && response.body() != null) markRated.run();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<DriverRatingResponseDTO> call, @NonNull Throwable t) { /* 404 = jos nije ocenjeno */ }
+        });
+
+        btnSubmit.setOnClickListener(v -> {
+            btnSubmit.setEnabled(false);
+            String comment = etComment.getText() != null ? etComment.getText().toString().trim() : "";
+
+            DriverRatingCreateRequestDTO body = new DriverRatingCreateRequestDTO(
+                    ride.id, npDriver.getValue(), npVehicle.getValue(), comment.isEmpty() ? null : comment);
+
+            driverRatingAPI.createRating(body).enqueue(new Callback<DriverRatingResponseDTO>() {
+                @Override
+                public void onResponse(@NonNull Call<DriverRatingResponseDTO> call, @NonNull Response<DriverRatingResponseDTO> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        Toast.makeText(ctx, "Thanks for rating your ride!", Toast.LENGTH_SHORT).show();
+                        markRated.run();
+                    } else {
+                        btnSubmit.setEnabled(true);
+                        Toast.makeText(ctx, describeError(response), Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<DriverRatingResponseDTO> call, @NonNull Throwable t) {
+                    btnSubmit.setEnabled(true);
+                    Toast.makeText(ctx, "Network error while submitting rating.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+    }
+
+    private static String describeError(Response<?> response) {
+        try {
+            if (response.errorBody() != null) {
+                String msg = response.errorBody().string();
+                if (msg != null && !msg.trim().isEmpty()) return msg;
+            }
+        } catch (Exception ignored) { }
+        switch (response.code()) {
+            case 409: return "This ride has already been rated.";
+            case 410: return "Rating deadline (3 days) has expired.";
+            case 400: return "Ratings must be between 1 and 5.";
+            case 404: return "Ride not found.";
+            default: return "Could not submit rating (" + response.code() + ").";
+        }
     }
 
     // --------- helpers (copied from your fragment, unchanged logic) ----------
