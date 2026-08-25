@@ -57,8 +57,8 @@ public class RidePassengerNotificationService {
     }
 
     private String describeRoute(Ride ride) {
-        String origin = ride.getOrigin() != null ? ride.getOrigin().toString() : "?";
-        String destination = ride.getDestination() != null ? ride.getDestination().toString() : "?";
+        String origin = ride.getOrigin() != null ? ride.getOrigin().toDisplayString() : "-";
+        String destination = ride.getDestination() != null ? ride.getDestination().toDisplayString() : "-";
         return "od " + origin + " do " + destination;
     }
 }

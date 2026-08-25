@@ -269,7 +269,7 @@ public class PassengerRideOverviewFragment extends Fragment {
             public void onResponse(Call<DriverRatingResponseDTO> call, Response<DriverRatingResponseDTO> response) {
                 if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
-                    markAlreadyRated();
+                    markAlreadyRated(response.body());
                 }
             }
 
@@ -280,13 +280,18 @@ public class PassengerRideOverviewFragment extends Fragment {
         });
     }
 
-    private void markAlreadyRated() {
+    private void markAlreadyRated(DriverRatingResponseDTO rating) {
         alreadyRated = true;
         if (btnSubmitRatingField != null) btnSubmitRatingField.setEnabled(false);
         if (npDriverField != null) npDriverField.setEnabled(false);
         if (npVehicleField != null) npVehicleField.setEnabled(false);
         if (etRatingCommentField != null) etRatingCommentField.setEnabled(false);
         if (btnSubmitRatingField != null) btnSubmitRatingField.setText("Already rated");
+        if (rating != null) {
+            if (rating.driverRating != null && npDriverField != null) npDriverField.setValue(rating.driverRating);
+            if (rating.vehicleRating != null && npVehicleField != null) npVehicleField.setValue(rating.vehicleRating);
+            if (etRatingCommentField != null) etRatingCommentField.setText(rating.text != null ? rating.text : "");
+        }
     }
 
     private void submitRating() {
@@ -308,7 +313,7 @@ public class PassengerRideOverviewFragment extends Fragment {
                 if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
                     Toast.makeText(requireContext(), "Thanks for rating your ride!", Toast.LENGTH_SHORT).show();
-                    markAlreadyRated();
+                    markAlreadyRated(response.body());
                 } else {
                     btnSubmitRatingField.setEnabled(true);
                     Toast.makeText(requireContext(), describeError(response), Toast.LENGTH_LONG).show();

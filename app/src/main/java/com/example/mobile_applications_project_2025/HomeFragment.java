@@ -2,6 +2,8 @@ package com.example.mobile_applications_project_2025;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -61,6 +63,18 @@ public class HomeFragment extends Fragment {
 
     // cached latest rides for click
     private Ride cachedPassengerOngoing;   // Started
+
+    // 2.6.2/2.7 - dok je Home vidljiv, periodicno proveravamo da li je u medjuvremenu
+    // vozac krenuo/zavrsio voznju, da se dugme za pracenje pojavi/nestane bez rucnog refresh-a.
+    private static final long HOME_BUTTONS_POLL_MS = 5000;
+    private final Handler homeButtonsPollHandler = new Handler(Looper.getMainLooper());
+    private final Runnable homeButtonsPollRunnable = new Runnable() {
+        @Override
+        public void run() {
+            refreshHomeButtons();
+            homeButtonsPollHandler.postDelayed(this, HOME_BUTTONS_POLL_MS);
+        }
+    };
     private Ride cachedDriverOngoing;      // Started
     private Ride cachedDriverNextScheduled; // Scheduled
 
@@ -154,6 +168,7 @@ public class HomeFragment extends Fragment {
             driversMapController.start();
         }
         refreshHomeButtons();
+        homeButtonsPollHandler.postDelayed(homeButtonsPollRunnable, HOME_BUTTONS_POLL_MS);
     }
 
     @Override
@@ -165,6 +180,7 @@ public class HomeFragment extends Fragment {
         if (driversMapController != null) {
             driversMapController.stop();
         }
+        homeButtonsPollHandler.removeCallbacks(homeButtonsPollRunnable);
     }
 
     private void refreshHomeButtons() {

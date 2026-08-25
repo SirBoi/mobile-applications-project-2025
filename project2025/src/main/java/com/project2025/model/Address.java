@@ -61,5 +61,14 @@ public class Address {
 	public String toString() {
 		return "Address [country=" + country + ", city=" + city + ", street=" + street + ", number=" + number + "]";
 	}
-}
 
+	// Citljiv format za mejlove/notifikacije, npr. "Fruskogorska 1, Novi Sad".
+	public String toDisplayString() {
+		StringBuilder sb = new StringBuilder();
+		if (street != null && !street.isBlank()) sb.append(street);
+		if (number != null && !number.isBlank()) sb.append(sb.length() > 0 ? " " : "").append(number);
+		if (city != null && !city.isBlank()) sb.append(sb.length() > 0 ? ", " : "").append(city);
+		if (country != null && !country.isBlank()) sb.append(sb.length() > 0 ? ", " : "").append(country);
+		return sb.length() > 0 ? sb.toString() : "-";
+	}
+}
