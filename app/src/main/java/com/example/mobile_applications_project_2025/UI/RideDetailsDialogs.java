@@ -177,19 +177,15 @@ public final class RideDetailsDialogs {
         npVehicle.setMaxValue(5);
         npVehicle.setValue(5);
 
-        Runnable markRated = () -> {
-            btnSubmit.setEnabled(false);
-            btnSubmit.setText("Already rated");
-            npDriver.setEnabled(false);
-            npVehicle.setEnabled(false);
-            etComment.setEnabled(false);
-        };
+        Runnable markRatedEmpty = () -> markRated(section, npDriver, npVehicle, etComment, btnSubmit, null);
 
         // proveri da li je vec ocenjeno
         driverRatingAPI.getByRide(ride.id).enqueue(new Callback<DriverRatingResponseDTO>() {
             @Override
             public void onResponse(@NonNull Call<DriverRatingResponseDTO> call, @NonNull Response<DriverRatingResponseDTO> response) {
-                if (response.isSuccessful() && response.body() != null) markRated.run();
+                if (response.isSuccessful() && response.body() != null) {
+                    markRated(section, npDriver, npVehicle, etComment, btnSubmit, response.body());
+                }
             }
 
             @Override
@@ -208,7 +204,7 @@ public final class RideDetailsDialogs {
                 public void onResponse(@NonNull Call<DriverRatingResponseDTO> call, @NonNull Response<DriverRatingResponseDTO> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         Toast.makeText(ctx, "Thanks for rating your ride!", Toast.LENGTH_SHORT).show();
-                        markRated.run();
+                        markRated(section, npDriver, npVehicle, etComment, btnSubmit, response.body());
                     } else {
                         btnSubmit.setEnabled(true);
                         Toast.makeText(ctx, describeError(response), Toast.LENGTH_LONG).show();
@@ -222,6 +218,22 @@ public final class RideDetailsDialogs {
                 }
             });
         });
+    }
+
+    // 2.8 - disable-uje formu i prikazuje ostavljenu ocenu/komentar umesto praznog "Already rated".
+    private static void markRated(View section, NumberPicker npDriver, NumberPicker npVehicle,
+                                  TextInputEditText etComment, Button btnSubmit, DriverRatingResponseDTO rating) {
+        btnSubmit.setEnabled(false);
+        btnSubmit.setText("Already rated");
+        npDriver.setEnabled(false);
+        npVehicle.setEnabled(false);
+        etComment.setEnabled(false);
+
+        if (rating != null) {
+            if (rating.driverRating != null) npDriver.setValue(rating.driverRating);
+            if (rating.vehicleRating != null) npVehicle.setValue(rating.vehicleRating);
+            etComment.setText(rating.text != null ? rating.text : "");
+        }
     }
 
     private static String describeError(Response<?> response) {

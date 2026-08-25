@@ -3,6 +3,8 @@ package com.example.mobile_applications_project_2025;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +60,17 @@ public class ChatFragment extends Fragment {
     private Long chatUserId; // ciji je ovo chat (vlasnik)
     private Long myUserId;   // ko je ulogovan (posiljalac kad se salje poruka)
 
+    // jednostavan polling - da se novopristigle poruke prikazu bez rucnog izlaska iz ekrana
+    private static final long POLL_INTERVAL_MS = 3000;
+    private final Handler pollHandler = new Handler(Looper.getMainLooper());
+    private final Runnable pollRunnable = new Runnable() {
+        @Override
+        public void run() {
+            loadMessages();
+            pollHandler.postDelayed(this, POLL_INTERVAL_MS);
+        }
+    };
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -95,6 +108,18 @@ public class ChatFragment extends Fragment {
             if (text.isEmpty()) return;
             sendMessage(text);
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (chatAPI != null) pollHandler.postDelayed(pollRunnable, POLL_INTERVAL_MS);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        pollHandler.removeCallbacks(pollRunnable);
     }
 
     private void loadMessages() {

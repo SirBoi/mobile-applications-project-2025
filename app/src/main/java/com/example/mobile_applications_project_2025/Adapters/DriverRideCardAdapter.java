@@ -90,10 +90,34 @@ public class DriverRideCardAdapter extends RecyclerView.Adapter<DriverRideCardAd
 
         // Cancelled + Panicked
         boolean cancelled = (r.status != null && r.status.name().equalsIgnoreCase("Cancelled"));
-        h.tvCancelled.setText("Cancelled: " + (cancelled ? "Yes" : "No"));
+        String cancelledText = "Cancelled: " + (cancelled ? "Yes" : "No");
+        if (cancelled && r.cancelledBy != null) {
+            String fn = r.cancelledBy.firstName != null ? r.cancelledBy.firstName : "";
+            String ln = r.cancelledBy.lastName != null ? r.cancelledBy.lastName : "";
+            String name = (fn + " " + ln).trim();
+            if (!name.isEmpty()) cancelledText += " (by " + name + ")";
+        }
+        h.tvCancelled.setText(cancelledText);
         h.tvPanicked.setText("Panicked: " + (Boolean.TRUE.equals(r.isPanicPressed) ? "Yes" : "No"));
+        h.tvPassengers.setText("Passengers: " + formatPassengers(r));
 
         h.itemView.setOnClickListener(v -> listener.onRideClick(r));
+    }
+
+    private String formatPassengers(Ride r) {
+        java.util.List<String> names = new ArrayList<>();
+        if (r.passenger != null) {
+            String fn = r.passenger.getFirstName() != null ? r.passenger.getFirstName() : "";
+            String ln = r.passenger.getLastName() != null ? r.passenger.getLastName() : "";
+            String name = (fn + " " + ln).trim();
+            if (!name.isEmpty()) names.add(name);
+        }
+        if (r.passengers != null) {
+            for (String n : r.passengers) {
+                if (n != null && !n.trim().isEmpty() && !names.contains(n.trim())) names.add(n.trim());
+            }
+        }
+        return names.isEmpty() ? "-" : String.join(", ", names);
     }
 
     private String formatRoute(Address o, Address d) {
@@ -117,7 +141,7 @@ public class DriverRideCardAdapter extends RecyclerView.Adapter<DriverRideCardAd
     }
 
     static class VH extends RecyclerView.ViewHolder {
-        TextView tvDate, tvStatus, tvRoute, tvTimeRange, tvPrice, tvCancelled, tvPanicked;
+        TextView tvDate, tvStatus, tvRoute, tvTimeRange, tvPrice, tvCancelled, tvPanicked, tvPassengers;
 
         VH(@NonNull View itemView) {
             super(itemView);
@@ -128,6 +152,7 @@ public class DriverRideCardAdapter extends RecyclerView.Adapter<DriverRideCardAd
             tvPrice = itemView.findViewById(R.id.tvPrice);
             tvCancelled = itemView.findViewById(R.id.tvCancelled);
             tvPanicked = itemView.findViewById(R.id.tvPanicked);
+            tvPassengers = itemView.findViewById(R.id.tvPassengers);
         }
     }
 }

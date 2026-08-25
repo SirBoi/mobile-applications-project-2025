@@ -10,6 +10,11 @@ public final class BaseUrl {
 //        return "http://10.1.145.233:8080/";
 
         //return "http://192.168.1.6:8080/";
-        return "http://10.0.2.2:8080/";
+
+
+
+
+//        return "http://10.0.2.2:8080/";
+        return "http://192.168.1.4:8080/";
     }
 }
